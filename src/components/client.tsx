@@ -58,7 +58,7 @@ export type Added = { id: string; name: string; group: string; pos: SquadPlayer[
 export type Jersey = { id: string; number: string };
 export type Fixture = { id: string; group: string; opponent: string; date: string; time: string; venue: string; side: string; competition: string; scoreUs: string; scoreThem: string };
 export type NewsItem = { id: string; title: string; date: string; body: string };
-export type Message = { id: string; name: string; phone: string; email: string; message: string; createdAt: number };
+export type Message = { id: string; name: string; phone: string; email: string; message: string; read?: string; createdAt: number };
 
 /** Sample squads + players staff added, with staff-assigned jersey numbers applied. */
 export function useSquads() {

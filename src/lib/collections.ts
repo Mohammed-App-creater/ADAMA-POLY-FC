@@ -98,8 +98,9 @@ export const COLLECTIONS: Record<string, Def> = {
     publicCreate: false,
   },
   messages: {
-    fields: { name: str(120), phone: str(40), email: str(120), message: str(2000) },
+    fields: { name: str(120), phone: str(40), email: str(120), message: str(2000), read: oneOf(["yes", "no"], "no") },
     required: ["name", "message"],
+    staffFields: ["read"],
     publicRead: false,
     publicCreate: true,
   },
