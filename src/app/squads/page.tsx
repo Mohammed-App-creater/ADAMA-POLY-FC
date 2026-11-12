@@ -35,6 +35,10 @@ export default function Squads() {
                     {players.map((p) => (
                       <li key={p.id} className={p.starter ? "starter" : ""}>
                         <span className="jn">{p.number}</span>
+                        {p.photo && (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <span className="avatar"><img src={p.photo} alt="" loading="lazy" /></span>
+                        )}
                         <span className="pname">
                           <b>{p.name}</b>
                           {p.foot && <small>{t(p.foot === "R" ? "footR" : "footL")}</small>}

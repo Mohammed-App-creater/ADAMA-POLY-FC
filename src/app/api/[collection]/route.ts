@@ -4,6 +4,7 @@ import { NextResponse } from "next/server";
 import { isStaff } from "@/lib/auth";
 import { COLLECTIONS, Invalid, clean } from "@/lib/collections";
 import { UPLOAD_DIR, newId, tx, type Row } from "@/lib/db";
+import { savePhoto } from "@/lib/photos";
 
 type Ctx = { params: Promise<{ collection: string }> };
 const err = (message: string, status: number) => NextResponse.json({ error: message }, { status });
@@ -52,6 +53,12 @@ export async function POST(req: Request, { params }: Ctx) {
       await fs.mkdir(UPLOAD_DIR, { recursive: true });
       await fs.writeFile(path.join(UPLOAD_DIR, `${id}.jpg`), Buffer.from(m[1], "base64"));
       data.receipt = `/api/uploads/${id}.jpg`;
+    }
+
+    if (def.photo && staff) {
+      const old = def.upsert ? await tx((db) => db[collection]?.find((r) => r.id === id)?.photo) : undefined;
+      const photo = await savePhoto(id, body.photo, old);
+      if (photo !== undefined) data.photo = photo;
     }
 
     const row: Row = { id, createdAt: Date.now(), ...data };

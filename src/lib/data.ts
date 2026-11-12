@@ -67,7 +67,7 @@ const posOf = (i: number): Pos => (i < 2 ? "GK" : i < 8 ? "DEF" : i < 14 ? "MID"
 
 export type SquadPlayer = {
   id: string; name: string; group: string; pos: Pos; number: string;
-  starter?: boolean; foot?: "R" | "L"; added?: boolean;
+  starter?: boolean; foot?: "R" | "L"; added?: boolean; photo?: string;
 };
 
 export function baseSquad(group: Group): SquadPlayer[] {

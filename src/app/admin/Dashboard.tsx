@@ -4,9 +4,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState, type FormEvent, type ReactNode } from "react";
+import { useCallback, useEffect, useState, type ChangeEvent, type FormEvent, type ReactNode } from "react";
 import {
-  Lightbox, StatusBadge, api, fmtDate, roleLabel, useCollection, useLang, useRoster, useSquads,
+  Lightbox, StatusBadge, api, compressImage, fmtDate, roleLabel, useCollection, useLang, useRoster, useSquads,
   type Added, type Fixture, type Message, type NewsItem, type Payment, type Player,
 } from "@/components/client";
 import { ALL_GROUPS, GROUPS, ROLE_KEYS, type StaffMember } from "@/lib/data";
@@ -16,7 +16,9 @@ type Data = Record<string, unknown>;
 type Field = { name: string; label: string; type?: string; options?: (string | [string, string])[]; required?: boolean; wide?: boolean };
 
 /* ---------- field lists (shared by the add and edit forms) ---------- */
+const PHOTO: Field = { name: "photo", label: "Photo", type: "photo" };
 const PLAYER: Field[] = [
+  PHOTO,
   { name: "name", label: "Player name", required: true },
   { name: "age", label: "Age", type: "number", required: true },
   { name: "group", label: "Age group", options: [...ALL_GROUPS] },
@@ -26,6 +28,7 @@ const PLAYER: Field[] = [
   { name: "status", label: "Status", options: ["Pending", "Active", "Inactive"] },
 ];
 const SQUAD: Field[] = [
+  PHOTO,
   { name: "name", label: "Name", required: true },
   { name: "group", label: "Age group", options: [...GROUPS] },
   { name: "pos", label: "Position", options: [["GK", "Goalkeeper"], ["DEF", "Defender"], ["MID", "Midfielder"], ["FWD", "Forward"]] },
@@ -50,19 +53,60 @@ const NEWS: Field[] = [
 const ROLES: Key[] = [...ROLE_KEYS, "r_second", "r_coach"];
 
 /* ---------- small building blocks ---------- */
+/** Photo chooser: shows the current photo and lets staff replace or remove it. */
+function PhotoInput({ label, current, onChange }: { label: string; current: string; onChange: (v: string) => void }) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  async function pick(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    if (!file.type.startsWith("image/")) return setError("Please choose an image file.");
+    setBusy(true);
+    setError("");
+    try {
+      onChange(await compressImage(file));
+    } catch {
+      setError("Could not read that image.");
+    }
+    setBusy(false);
+  }
+  return (
+    <div className="photo-input">
+      <span className="avatar lg">
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        {current ? <img src={current} alt="" /> : <span aria-hidden="true">?</span>}
+      </span>
+      <div>
+        <span className="photo-label">{label}</span>
+        <div className="btn-row">
+          <label className="btn sm plain">
+            {busy ? "Loading…" : current ? "Change photo" : "Upload photo"}
+            <input type="file" accept="image/*" hidden onChange={pick} disabled={busy} />
+          </label>
+          {current && <button className="btn sm plain" type="button" onClick={() => onChange("")}>Remove</button>}
+        </div>
+        {error && <div className="msg err" role="alert">{error}</div>}
+      </div>
+    </div>
+  );
+}
+
 function RecordForm({ fields, initial, button, onSubmit, onCancel }: {
   fields: Field[]; initial?: Data; button: string; onSubmit: (d: Data) => Promise<void>; onCancel?: () => void;
 }) {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  // Photo fields live in state (not the form) so only changed photos are sent.
+  const [photos, setPhotos] = useState<Record<string, string>>({});
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = e.currentTarget;
     setBusy(true);
     setError("");
     try {
-      await onSubmit(Object.fromEntries(new FormData(form)));
-      if (!initial) form.reset();
+      await onSubmit({ ...Object.fromEntries(new FormData(form)), ...photos });
+      if (!initial) { form.reset(); setPhotos({}); }
     } catch (x) {
       setError((x as Error).message);
     }
@@ -72,7 +116,11 @@ function RecordForm({ fields, initial, button, onSubmit, onCancel }: {
   return (
     <form onSubmit={submit}>
       <div className="row">
-        {fields.map((f) => (
+        {fields.map((f) => f.type === "photo" ? (
+          <div key={f.name} style={{ gridColumn: "1 / -1" }}>
+            <PhotoInput label={f.label} current={photos[f.name] ?? val(f)} onChange={(v) => setPhotos((p) => ({ ...p, [f.name]: v }))} />
+          </div>
+        ) : (
           <div key={f.name} style={f.wide ? { gridColumn: "1 / -1" } : undefined}>
             <label>
               {f.label}
@@ -112,6 +160,16 @@ function Sheet({ title, onClose, children }: { title: string; onClose: () => voi
       </div>
     </div>
   );
+}
+
+/** Small round photo (or initial) for list rows; click to enlarge. */
+function Avatar({ src, name, onOpen }: { src?: string; name: string; onOpen: (s: string) => void }) {
+  return src ? (
+    <button className="avatar" type="button" aria-label={`View photo of ${name}`} onClick={() => onOpen(src)}>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={src} alt="" />
+    </button>
+  ) : <span className="avatar" aria-hidden="true">{name.charAt(0)}</span>;
 }
 
 function Panel({ title, action, children }: { title: string; action?: ReactNode; children: ReactNode }) {
@@ -205,13 +263,14 @@ export default function Dashboard() {
 
   // Coaches pick a standard role or type their own title.
   const staffFields: Field[] = [
+    PHOTO,
     { name: "name", label: "Name", required: true },
     { name: "roleKey", label: "Role", options: [...ROLES.map((k) => [k, t(k)] as [string, string]), ["", "Other (type below)"]] },
     { name: "roleText", label: "Other role title" },
     { name: "phone", label: "Phone", type: "tel" },
     { name: "jersey", label: "Jersey number", type: "number" },
   ];
-  const staffOut = (d: Data) => ({ name: d.name, phone: d.phone, jersey: d.jersey, role: String(d.roleText || "").trim() || d.roleKey });
+  const staffOut = (d: Data) => ({ name: d.name, phone: d.phone, jersey: d.jersey, photo: d.photo, role: String(d.roleText || "").trim() || d.roleKey });
   const staffIn = (s: StaffMember & { id: string }) => ({ ...s, roleKey: isKey(s.role) ? s.role : "", roleText: isKey(s.role) ? "" : s.role });
 
   const payRow = (p: Payment) => (
@@ -334,10 +393,11 @@ export default function Dashboard() {
             <p className="muted">{players.rows.length} registered{shownPlayers.length !== players.rows.length ? ` · ${shownPlayers.length} shown` : ""}</p>
             <div className="scroll">
               <table className="tbl">
-                <thead><tr><th>Name</th><th>Age</th><th>Group</th><th>Student ID</th><th>Parent</th><th>Phone</th><th>Status</th><th /></tr></thead>
+                <thead><tr><th /><th>Name</th><th>Age</th><th>Group</th><th>Student ID</th><th>Parent</th><th>Phone</th><th>Status</th><th /></tr></thead>
                 <tbody>
                   {shownPlayers.map((p) => (
                     <tr key={p.id}>
+                      <td><Avatar src={p.photo} name={p.name} onOpen={setPhoto} /></td>
                       <td>{p.name}</td><td>{p.age}</td><td>{p.group}</td><td>{p.studentId}</td><td>{p.parent}</td><td>{p.phone}</td>
                       <td>
                         <select aria-label={`Status of ${p.name}`} value={p.status} onChange={(e) => run(() => api("PATCH", `/api/players/${p.id}`, { status: e.target.value }), players.reload)}>
@@ -352,7 +412,7 @@ export default function Dashboard() {
                       </td>
                     </tr>
                   ))}
-                  {!shownPlayers.length && <tr><td colSpan={8}>No players found.</td></tr>}
+                  {!shownPlayers.length && <tr><td colSpan={9}>No players found.</td></tr>}
                 </tbody>
               </table>
             </div>
@@ -365,6 +425,7 @@ export default function Dashboard() {
               <p className="muted">The 80 sample squad names come from the site's data file. Players you add here appear on the Squads page next to them.</p>
               {added.rows.length ? added.rows.map((s) => (
                 <div className="rowcard" key={s.id}>
+                  <Avatar src={s.photo} name={s.name} onOpen={setPhoto} />
                   <span className="jn">{s.jersey || "–"}</span>
                   <div className="grow"><b>{s.name}</b><div className="muted">{s.group} · {s.pos}</div></div>
                   <button className="btn sm plain" type="button" onClick={() => openForm("Edit squad player", "squadPlayers", SQUAD, reloadSquad, s)}>Edit</button>
@@ -399,6 +460,7 @@ export default function Dashboard() {
             <p className="muted">The three built-in coaches are set in the site's data file. Coaches you add here appear on the Coaches page after them.</p>
             {staff.rows.length ? staff.rows.map((s) => (
               <div className="rowcard" key={s.id}>
+                <Avatar src={s.photo} name={s.name} onOpen={setPhoto} />
                 <div className="grow"><b>{s.name}</b><div className="muted">{roleLabel(t, s.role)}{s.jersey ? ` · #${s.jersey}` : ""}{s.phone ? ` · ${s.phone}` : ""}</div></div>
                 <button className="btn sm plain" type="button" onClick={() => openForm("Edit coach", "staff", staffFields, staff.reload, staffIn(s), staffOut)}>Edit</button>
                 <button className="btn sm badb" type="button" onClick={() => remove("staff", s.id, staff.reload, "coach")}>Delete</button>

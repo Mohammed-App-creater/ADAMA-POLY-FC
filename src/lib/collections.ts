@@ -39,6 +39,8 @@ export type Def = {
   publicView?: (r: Row) => Record<string, unknown>;
   /** Row id comes from the request body (create-or-replace). */
   upsert?: boolean;
+  /** Staff may upload a profile photo (stored as `photo`). */
+  photo?: boolean;
 };
 
 export const COLLECTIONS: Record<string, Def> = {
@@ -52,6 +54,7 @@ export const COLLECTIONS: Record<string, Def> = {
     publicRead: true,
     publicCreate: true,
     publicView: (r) => ({ id: r.id, name: r.name, group: r.group }),
+    photo: true,
   },
   payments: {
     fields: {
@@ -68,12 +71,14 @@ export const COLLECTIONS: Record<string, Def> = {
     required: ["name", "role"],
     publicRead: true,
     publicCreate: false,
+    photo: true,
   },
   squadPlayers: {
     fields: { name: str(120), group: oneOf(GROUPS), pos: oneOf(["GK", "DEF", "MID", "FWD"]), jersey: str(3) },
     required: ["name", "group", "pos"],
     publicRead: true,
     publicCreate: false,
+    photo: true,
   },
   jerseys: {
     fields: { number: str(3) },

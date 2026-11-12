@@ -52,9 +52,9 @@ export function useCollection<T>(name: string) {
 }
 
 /* ---------- shared records ---------- */
-export type Player = { id: string; name: string; group: string; age?: number; studentId?: string; parent?: string; phone?: string; status?: string; createdAt?: number };
+export type Player = { id: string; name: string; group: string; age?: number; studentId?: string; parent?: string; phone?: string; status?: string; photo?: string; createdAt?: number };
 export type Payment = { id: string; playerId: string; playerName: string; group: string; receipt: string; status: string; createdAt: number };
-export type Added = { id: string; name: string; group: string; pos: SquadPlayer["pos"]; jersey?: string };
+export type Added = { id: string; name: string; group: string; pos: SquadPlayer["pos"]; jersey?: string; photo?: string };
 export type Jersey = { id: string; number: string };
 export type Fixture = { id: string; group: string; opponent: string; date: string; time: string; venue: string; side: string; competition: string; scoreUs: string; scoreThem: string };
 export type NewsItem = { id: string; title: string; date: string; body: string };
@@ -68,7 +68,7 @@ export function useSquads() {
     const num = new Map(jerseys.rows.map((j) => [j.id, j.number]));
     const all: SquadPlayer[] = [
       ...GROUPS.flatMap(baseSquad),
-      ...added.rows.map((a) => ({ id: `add-${a.id}`, name: a.name, group: a.group, pos: a.pos, number: a.jersey || "", added: true })),
+      ...added.rows.map((a) => ({ id: `add-${a.id}`, name: a.name, group: a.group, pos: a.pos, number: a.jersey || "", photo: a.photo, added: true })),
     ];
     return all.map((p) => ({ ...p, number: num.get(p.id) || p.number }));
   }, [added.rows, jerseys.rows]);
