@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { isStaff } from "@/lib/auth";
 import { COLLECTIONS, Invalid, clean } from "@/lib/collections";
-import { NotConfigured, files, get, put, remove } from "@/lib/db";
+import { NotConfigured, files, get, list, put, remove } from "@/lib/db";
 import { removeUpload, savePhoto } from "@/lib/photos";
 
 type Ctx = { params: Promise<{ collection: string; id: string }> };
@@ -52,6 +52,14 @@ export async function DELETE(_req: Request, { params }: Ctx) {
     if (!removed) return err("Not found", 404);
     if (collection === "payments") await files.del(`${id}.jpg`);
     await removeUpload(removed.photo);
+    if (collection === "staff") {
+      // A coach's own photos go with them.
+      for (const g of await list("gallery")) {
+        if (g.coach !== id) continue;
+        await remove("gallery", g.id);
+        await removeUpload(g.photo);
+      }
+    }
     return NextResponse.json({ ok: true });
   } catch (e) {
     return fail(e, "Could not delete");

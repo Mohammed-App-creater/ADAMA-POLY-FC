@@ -92,7 +92,8 @@ export const COLLECTIONS: Record<string, Def> = {
     upsert: true,
   },
   gallery: {
-    fields: { caption: str(160) },
+    // coach: id of the coach the photo belongs to; empty for the training gallery.
+    fields: { caption: str(160), coach: str(80) },
     required: [],
     publicRead: true,
     publicCreate: false,

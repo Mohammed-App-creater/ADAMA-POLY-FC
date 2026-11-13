@@ -506,3 +506,16 @@ button.avatar { cursor: zoom-in; }
 .gal-admin img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; cursor: zoom-in; }
 .gal-admin figcaption { padding: 10px 12px 0; font-weight: 600; font-size: 15px; }
 .gal-admin .btn-row { padding: 10px 12px 12px; margin: 0; }
+
+/* Multi-photo upload and per-coach photos */
+.batch { margin-top: 14px; }
+.batch label.btn { cursor: pointer; margin: 0; display: inline-flex; }
+.batch-grid { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(104px, 1fr)); margin: 12px 0; }
+.batch-grid figure { position: relative; margin: 0; border-radius: 10px; overflow: hidden; border: 1px solid var(--line); background: #111; }
+.batch-grid img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; cursor: zoom-in; }
+.batch-grid figure button { position: absolute; top: 5px; right: 5px; width: 28px; height: 28px; border: 0; border-radius: 50%; background: rgba(13, 13, 13, 0.82); color: #fff; font-size: 13px; line-height: 1; cursor: pointer; }
+.batch-grid figure button:hover { background: var(--bad); }
+.person .thumbs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-top: 14px; }
+.person .thumbs button { padding: 0; border: 0; border-radius: 8px; overflow: hidden; background: #111; cursor: zoom-in; }
+.person .thumbs img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; transition: transform 0.3s var(--ease); }
+.person .thumbs button:hover img { transform: scale(1.08); }

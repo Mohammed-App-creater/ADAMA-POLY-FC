@@ -7,12 +7,13 @@ export const GROUPS = ["U10", "U13", "U15", "U17"] as const;
 export const ALL_GROUPS = [...GROUPS, "Senior"] as const;
 export type Group = (typeof GROUPS)[number];
 
-// TODO: replace these placeholders with the real details.
+// Starting contact details. Staff change them under Admin > Settings.
+export const OLD_PHONE = "+251 ___ ___ ___"; // placeholder used before the real number was known
 export const CONTACT = {
-  phone: "+251 ___ ___ ___",
+  phone: "+251 91 341 2418",
   email: "info@adamapoly.example",
   address: "Adama Polytechnic College sports ground, Adama",
-  bankAccount: "", // CBE account number shown on the Pay page when filled in
+  bankAccount: "1000432933834 (College Adama Football Academy)", // shown on the Pay page
 };
 
 export const SCHEDULE: { group: Group; days: string; time: string }[] = [

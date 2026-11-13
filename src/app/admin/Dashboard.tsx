@@ -61,6 +61,7 @@ const GALLERY_FIELDS: Field[] = [
   { name: "photo", label: "Photo", type: "photo" },
   { name: "caption", label: "Caption (optional)", wide: true },
 ];
+const MAX_BATCH = 30; // photos per upload
 const SETTINGS: Field[] = [
   { name: "phone", label: "Phone", type: "tel" },
   { name: "email", label: "Email", type: "email" },
@@ -163,6 +164,90 @@ function RecordForm({ fields, initial, button, onSubmit, onCancel }: {
   );
 }
 
+/** Choose several photos at once, check them, then upload them one after another. */
+function BatchUpload({ coach, onUploaded, onDone }: { coach: string; onUploaded: () => void; onDone: (count: number) => void }) {
+  const [items, setItems] = useState<{ key: number; src: string }[]>([]);
+  const [caption, setCaption] = useState("");
+  const [busy, setBusy] = useState("");
+  const [error, setError] = useState("");
+
+  async function pick(e: ChangeEvent<HTMLInputElement>) {
+    const chosen = [...(e.target.files ?? [])];
+    e.target.value = "";
+    const room = MAX_BATCH - items.length;
+    setError(chosen.length > room ? `Only ${MAX_BATCH} photos can be uploaded at a time. The rest were left out.` : "");
+    let skipped = 0;
+    let n = 0;
+    for (const file of chosen.slice(0, room)) {
+      setBusy(`Preparing photo ${++n} of ${Math.min(chosen.length, room)}…`);
+      try {
+        if (!file.type.startsWith("image/")) throw new Error();
+        const src = await compressImage(file);
+        setItems((p) => [...p, { key: Date.now() + Math.random(), src }]);
+      } catch {
+        skipped++;
+      }
+    }
+    if (skipped) setError(`${skipped} file${skipped > 1 ? "s were" : " was"} skipped because it could not be read as an image.`);
+    setBusy("");
+  }
+
+  async function upload() {
+    setError("");
+    const todo = [...items];
+    let done = 0;
+    for (const it of todo) {
+      setBusy(`Uploading ${done + 1} of ${todo.length}…`);
+      try {
+        await api("POST", "/api/gallery", { caption, coach, photo: it.src });
+        done++;
+        setItems((p) => p.filter((x) => x.key !== it.key));
+      } catch (x) {
+        setError(`${done} of ${todo.length} uploaded, then it stopped: ${(x as Error).message}. The photos still shown were not uploaded.`);
+        break;
+      }
+    }
+    setBusy("");
+    if (done) onUploaded();
+    if (done === todo.length) onDone(done);
+  }
+
+  return (
+    <div className="batch">
+      <label className="btn plain">
+        {items.length ? "+ Choose more photos" : "Choose photos"}
+        <input type="file" accept="image/*" multiple hidden onChange={pick} disabled={!!busy} />
+      </label>
+      <p className="muted">You can pick many photos at once.</p>
+      {items.length > 0 && (
+        <>
+          <div className="batch-grid">
+            {items.map((it) => (
+              <figure key={it.key}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={it.src} alt="" />
+                <button type="button" aria-label="Remove this photo" disabled={!!busy} onClick={() => setItems((p) => p.filter((x) => x.key !== it.key))}>✕</button>
+              </figure>
+            ))}
+          </div>
+          <label>
+            Caption for these photos (optional)
+            <input value={caption} onChange={(e) => setCaption(e.target.value)} maxLength={160} />
+          </label>
+        </>
+      )}
+      {busy && <div className="msg ok" role="status">{busy}</div>}
+      {error && <div className="msg err" role="alert">{error}</div>}
+      <div className="btn-row">
+        <button className="btn" type="button" disabled={!items.length || !!busy} onClick={upload}>
+          {items.length ? `Upload ${items.length} photo${items.length > 1 ? "s" : ""}` : "Upload"}
+        </button>
+        <button className="btn ghost" type="button" disabled={!!busy} onClick={() => onDone(0)}>Close</button>
+      </div>
+    </div>
+  );
+}
+
 function Sheet({ title, onClose, children }: { title: string; onClose: () => void; children: ReactNode }) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
@@ -212,6 +297,8 @@ export default function Dashboard() {
   const [gf, setGf] = useState("");
   const [payFilter, setPayFilter] = useState("pending");
   const [sGroup, setSGroup] = useState("U10");
+  // Multi-photo sheet: coach is "" for the training gallery, or a coach id.
+  const [batch, setBatch] = useState<{ title: string; coach: string } | null>(null);
 
   const players = useCollection<Player>("players");
   const payments = useCollection<Payment>("payments");
@@ -272,6 +359,8 @@ export default function Dashboard() {
   };
 
   const squads = squad.rows;
+  const trainingPhotos = gallery.rows.filter((g) => !g.coach);
+  const batchPhotos = batch?.coach ? gallery.rows.filter((g) => g.coach === batch.coach) : [];
   const shownSquad = squads.filter((p) => p.group === sGroup).sort((a, b) => (Number(a.jersey) || 999) - (Number(b.jersey) || 999));
   const pending = payments.rows.filter((p) => p.status === "pending").sort((a, b) => a.createdAt - b.createdAt);
   const unread = messages.rows.filter((m) => m.read !== "yes");
@@ -471,8 +560,9 @@ export default function Dashboard() {
               <div className="rowcard" key={s.id}>
                 <Avatar src={s.photo} name={s.name} onOpen={setPhoto} />
                 <div className="grow"><b>{s.name}</b><div className="muted">{roleLabel(t, s.role)}{s.jersey ? ` · #${s.jersey}` : ""}{s.phone ? ` · ${s.phone}` : ""}</div></div>
+                <button className="btn sm plain" type="button" onClick={() => setBatch({ title: `Photos of ${s.name}`, coach: s.id })}>Photos ({gallery.rows.filter((g) => g.coach === s.id).length})</button>
                 <button className="btn sm plain" type="button" onClick={() => openForm("Edit coach", "staff", staffFields, staff.reload, staffIn(s), staffOut)}>Edit</button>
-                <button className="btn sm badb" type="button" onClick={() => remove("staff", s.id, staff.reload, "coach")}>Delete</button>
+                <button className="btn sm badb" type="button" onClick={() => remove("staff", s.id, () => { staff.reload(); gallery.reload(); }, "coach")}>Delete</button>
               </div>
             )) : <p className="empty">No coaches yet.</p>}
           </Panel>
@@ -518,10 +608,11 @@ export default function Dashboard() {
         )}
 
         {section === "Gallery" && (
-          <Panel title="Gallery photos" action={<button className="btn sm" type="button" onClick={() => openForm("Add photo", "gallery", GALLERY_FIELDS, gallery.reload)}>+ Add photo</button>}>
-            {gallery.rows.length ? (
+          <Panel title="Gallery photos" action={<button className="btn sm" type="button" onClick={() => setBatch({ title: "Add gallery photos", coach: "" })}>+ Add photos</button>}>
+            <p className="muted">Photos for the public Gallery page. Each coach's own photos are added from the Coaches section.</p>
+            {trainingPhotos.length ? (
               <div className="gal-admin">
-                {gallery.rows.map((g) => (
+                {trainingPhotos.map((g) => (
                   <figure key={g.id}>
                     {/* eslint-disable-next-line @next/next/no-img-element */}
                     <img src={g.photo} alt={g.caption} loading="lazy" onClick={() => setPhoto(g.photo)} />
@@ -569,6 +660,34 @@ export default function Dashboard() {
       {form && (
         <Sheet title={form.title} onClose={() => setForm(null)}>
           <RecordForm fields={form.fields} initial={form.initial} button="Save" onSubmit={async (d) => { await form.save(d); }} onCancel={() => setForm(null)} />
+        </Sheet>
+      )}
+      {batch && (
+        <Sheet title={batch.title} onClose={() => setBatch(null)}>
+          {batch.coach && (
+            <>
+              <p className="muted">These photos appear on this coach's card on the Coaches page. The main profile photo is set with Edit.</p>
+              {batchPhotos.length > 0 && (
+                <div className="batch-grid">
+                  {batchPhotos.map((g) => (
+                    <figure key={g.id}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={g.photo} alt={g.caption} onClick={() => setPhoto(g.photo)} />
+                      <button type="button" aria-label="Delete this photo" onClick={() => remove("gallery", g.id, gallery.reload, "photo")}>✕</button>
+                    </figure>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
+          <BatchUpload
+            coach={batch.coach}
+            onUploaded={gallery.reload}
+            onDone={(n) => {
+              if (n) setToast({ ok: true, text: `${n} photo${n > 1 ? "s" : ""} uploaded` });
+              if (!batch.coach || !n) setBatch(null);
+            }}
+          />
         </Sheet>
       )}
       {toast && <div className={`toast ${toast.ok ? "ok" : "err"}`} role="status">{toast.text}</div>}

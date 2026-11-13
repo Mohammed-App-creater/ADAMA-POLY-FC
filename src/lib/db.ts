@@ -5,7 +5,7 @@
 //  - A JSON file plus an uploads folder under ./data for local development.
 import { promises as fs } from "fs";
 import path from "path";
-import { CONTACT, GALLERY, GROUPS, SCHEDULE, STAFF, baseSquad } from "./data";
+import { CONTACT, GALLERY, GROUPS, OLD_PHONE, SCHEDULE, STAFF, baseSquad } from "./data";
 
 export type Row = { id: string; createdAt: number; [k: string]: unknown };
 
@@ -169,7 +169,7 @@ function readOnlyStore(): Store {
     all: async (col) => byAge([...(data[col] ?? [])]),
     get: async (col, id) => data[col]?.find((r) => r.id === id) ?? null,
     put: no, del: no, markSeeded: no, putFile: no, delFile: no,
-    seeded: async () => Object.keys(data),
+    seeded: async () => [...Object.keys(data), "contact-2026-11"], // nothing to seed or migrate
     getFile: async () => null,
   };
 }
@@ -194,6 +194,18 @@ async function db(): Promise<Store> {
       if (done.has(col)) continue;
       await s.put(col, rows);
       await s.markSeeded(col);
+    }
+    // One-time: databases started before the real phone and bank account were
+    // known still hold the placeholders. Fill them in, but never overwrite
+    // anything staff typed themselves.
+    if (!done.has("contact-2026-11")) {
+      const site = await s.get("settings", "site");
+      if (site) {
+        if (site.phone === OLD_PHONE) site.phone = CONTACT.phone;
+        if (!site.bankAccount) site.bankAccount = CONTACT.bankAccount;
+        await s.put("settings", [site]);
+      }
+      await s.markSeeded("contact-2026-11");
     }
   })();
   try {

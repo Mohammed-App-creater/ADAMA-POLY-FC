@@ -11,9 +11,9 @@ const en = {
   navSchedule: "Schedule", navGallery: "Gallery", navKit: "Kit", navNews: "News", navPay: "Pay fees",
   navReceipts: "Receipts", navContact: "Contact", navJoin: "Join", navStaff: "Staff", menu: "Menu",
 
-  heroEyebrow: "Adama Polytechnic College Football Academy",
+  heroEyebrow: "College Adama Football Academy",
   heroTitle: "Where champions are made",
-  heroText: "Adama Polytechnic College Football Academy trains young players in technique, fitness and character, from their first touch to match-day confidence.",
+  heroText: "College Adama Football Academy trains young players in technique, fitness and character, from their first touch to match-day confidence.",
   btnRegister: "Register a player", btnPrograms: "See programs",
   statPlayers: "Squad players", statGroups: "Age groups", statCoaches: "Coaches", statSessions: "Sessions a week",
 
@@ -105,7 +105,7 @@ const en = {
 
   notFoundTitle: "Page not found", notFoundText: "The page you are looking for does not exist.", backHome: "Back to home",
   quickLinks: "Quick links", forParents: "For parents",
-  footer: "© 2026 Adama Polytechnic College Football Academy",
+  footer: "© 2026 College Adama Football Academy",
 };
 
 export type Key = keyof typeof en;
@@ -115,9 +115,9 @@ const am: Partial<Record<Key, string>> = {
   navSchedule: "የጊዜ ሰሌዳ", navGallery: "ምስሎች", navKit: "ልብስ", navNews: "ዜና", navPay: "ክፍያ",
   navReceipts: "ደረሰኞች", navContact: "ያግኙን", navJoin: "ይቀላቀሉ", navStaff: "ሰራተኞች", menu: "ማውጫ",
 
-  heroEyebrow: "የአዳማ ፖሊቴክኒክ ኮሌጅ የእግር ኳስ አካዳሚ",
+  heroEyebrow: "ኮሌጅ አዳማ የእግር ኳስ አካዳሚ",
   heroTitle: "ሻምፒዮኖች የሚፈጠሩበት",
-  heroText: "የአዳማ ፖሊቴክኒክ ኮሌጅ የእግር ኳስ አካዳሚ ወጣት ተጫዋቾችን ከመጀመሪያው ንክኪ እስከ የጨዋታ ቀን በራስ መተማመን ድረስ በቴክኒክ፣ በአካል ብቃት እና በባህሪ ያሰለጥናል።",
+  heroText: "ኮሌጅ አዳማ የእግር ኳስ አካዳሚ ወጣት ተጫዋቾችን ከመጀመሪያው ንክኪ እስከ የጨዋታ ቀን በራስ መተማመን ድረስ በቴክኒክ፣ በአካል ብቃት እና በባህሪ ያሰለጥናል።",
   btnRegister: "ተጫዋች ያስመዝግቡ", btnPrograms: "ፕሮግራሞችን ይመልከቱ",
   statPlayers: "ተጫዋቾች", statGroups: "የእድሜ ምድቦች", statCoaches: "አሰልጣኞች", statSessions: "ስልጠና በሳምንት",
 
@@ -209,7 +209,7 @@ const am: Partial<Record<Key, string>> = {
 
   notFoundTitle: "ገጹ አልተገኘም", notFoundText: "የሚፈልጉት ገጽ የለም።", backHome: "ወደ መነሻ ተመለስ",
   quickLinks: "ፈጣን ማገናኛዎች", forParents: "ለወላጆች",
-  footer: "© 2026 የአዳማ ፖሊቴክኒክ ኮሌጅ የእግር ኳስ አካዳሚ",
+  footer: "© 2026 ኮሌጅ አዳማ የእግር ኳስ አካዳሚ",
 };
 
 const om: Partial<Record<Key, string>> = {
@@ -217,9 +217,9 @@ const om: Partial<Record<Key, string>> = {
   navSchedule: "Sagantaa", navGallery: "Suuraalee", navKit: "Uffata", navNews: "Oduu", navPay: "Kaffaltii",
   navReceipts: "Cuunfaa", navContact: "Nu quunnamaa", navJoin: "Makami", navStaff: "Hojjettoota", menu: "Baafata",
 
-  heroEyebrow: "Akaadaamii Kubbaa Miilaa Kolleejjii Poolii Teeknikaa Adaamaa",
+  heroEyebrow: "Akaadaamii Kubbaa Miilaa Kolleejjii Adaamaa",
   heroTitle: "Iddoo shaampiyoononni itti uumaman",
-  heroText: "Akaadaamiin Kubbaa Miilaa Kolleejjii Teeknikaa Adaamaa taphattoota dargaggoo teekiniikii, gabbina qaamaa fi amala irratti leenjisa, tuqaa jalqabaa irraa hanga amantaa guyyaa taphaatti.",
+  heroText: "Akaadaamiin Kubbaa Miilaa Kolleejjii Adaamaa taphattoota dargaggoo teekiniikii, gabbina qaamaa fi amala irratti leenjisa, tuqaa jalqabaa irraa hanga amantaa guyyaa taphaatti.",
   btnRegister: "Taphataa galmeessi", btnPrograms: "Sagantaalee ilaali",
   statPlayers: "Taphattoota", statGroups: "Garee umurii", statCoaches: "Leenjistoota", statSessions: "Leenjii torbanitti",
 

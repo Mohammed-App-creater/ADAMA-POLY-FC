@@ -6,7 +6,7 @@ import { Lightbox, PageHeader, useCollection, useLang, type GalleryPhoto } from 
 export default function Gallery() {
   const { t } = useLang();
   const [open, setOpen] = useState<string | null>(null);
-  const photos = useCollection<GalleryPhoto>("gallery").rows;
+  const photos = useCollection<GalleryPhoto>("gallery").rows.filter((g) => !g.coach);
   return (
     <>
       <PageHeader title={t("galleryTitle")} lead={t("galleryLead")} />
