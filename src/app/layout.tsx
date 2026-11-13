@@ -13,7 +13,7 @@ const display = Barlow_Condensed({ subsets: ["latin"], weight: ["600", "700", "8
 const ethiopic = Noto_Sans_Ethiopic({ subsets: ["ethiopic"], weight: ["400", "600", "700"], variable: "--f-eth" });
 
 export const metadata: Metadata = {
-  title: { default: "Adama Polytechnic College Football Academy", template: "%s · Adama Poly FC" },
+  title: { default: "College Adama FC", template: "%s · College Adama FC" },
   description: "Youth football academy in Adama: programs from U10 to U17, squads, training schedule, fixtures, registration and fee payment.",
   icons: { icon: "/images/crest.png" },
 };

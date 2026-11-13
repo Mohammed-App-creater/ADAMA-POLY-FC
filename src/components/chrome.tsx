@@ -7,18 +7,18 @@ import { useEffect, useRef, useState } from "react";
 import { LANGS, type Key, type Lang } from "@/lib/i18n";
 import { useLang, useSettings } from "./client";
 
-const LINKS: { href: string; key: Key; main?: boolean }[] = [
-  { href: "/about", key: "navAbout", main: true },
-  { href: "/programs", key: "navPrograms", main: true },
-  { href: "/squads", key: "navSquads", main: true },
-  { href: "/coaches", key: "navCoaches", main: true },
-  { href: "/schedule", key: "navSchedule", main: true },
-  { href: "/news", key: "navNews", main: true },
+const LINKS: { href: string; key: Key }[] = [
+  { href: "/about", key: "navAbout" },
+  { href: "/programs", key: "navPrograms" },
+  { href: "/squads", key: "navSquads" },
+  { href: "/coaches", key: "navCoaches" },
+  { href: "/schedule", key: "navSchedule" },
+  { href: "/news", key: "navNews" },
   { href: "/gallery", key: "navGallery" },
-  { href: "/kit", key: "navKit", main: true },
-  { href: "/pay", key: "navPay", main: true },
+  { href: "/kit", key: "navKit" },
+  { href: "/pay", key: "navPay" },
   { href: "/receipts", key: "navReceipts" },
-  { href: "/contact", key: "navContact", main: true },
+  { href: "/contact", key: "navContact" },
 ];
 
 /** Language switcher drawn in the site's own style (not the browser's dropdown). */
@@ -64,11 +64,11 @@ export function Nav() {
       <div className="wrap nav-row">
         <Link className="brand" href="/">
           <Image src="/images/crest.png" alt="" width={44} height={44} priority />
-          <span>ADAMA POLY FC</span>
+          <span>COLLEGE ADAMA FC</span>
         </Link>
         <ul className={`nav-links${open ? " open" : ""}`} id="nav-links">
           {LINKS.map((l) => (
-            <li key={l.href} className={l.main ? "" : "extra"}>
+            <li key={l.href}>
               <Link href={l.href} aria-current={path === l.href ? "page" : undefined}>{t(l.key)}</Link>
             </li>
           ))}
@@ -97,7 +97,7 @@ export function Footer() {
         <div>
           <div className="brand">
             <i><Image src="/images/crest.png" alt="" width={58} height={58} /></i>
-            <span>ADAMA POLY FC</span>
+            <span>COLLEGE ADAMA FC</span>
           </div>
           <p>{t("heroEyebrow")}</p>
         </div>

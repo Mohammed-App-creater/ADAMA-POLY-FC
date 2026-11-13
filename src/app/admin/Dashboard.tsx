@@ -314,7 +314,7 @@ export default function Dashboard() {
       <aside className="side">
         <Link className="side-brand" href="/">
           <i><Image src="/images/crest.png" alt="" width={38} height={38} /></i>
-          <span>ADAMA POLY FC<small>Admin</small></span>
+          <span>COLLEGE ADAMA FC<small>Admin</small></span>
         </Link>
         <nav aria-label="Admin sections">
           {SECTIONS.map((s) => (

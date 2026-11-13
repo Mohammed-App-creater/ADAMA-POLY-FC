@@ -36,7 +36,7 @@ const en = {
   kitTitle: "Team kit", kitLead: "Official academy kit for training and matches.", sizes: "Size guide",
   kitHome: "Home", kitAway: "Away", kitTraining: "Training", thSize: "Size", thAge: "Age",
 
-  whyTitle: "Why Adama Poly FC",
+  whyTitle: "Why College Adama FC",
   whyLead: "We develop the whole player: skill on the pitch, discipline in training and respect off it.",
   w1t: "Qualified coaches", w1: "Training plans that match each age group.",
   w2t: "Match experience", w2: "Friendly games and tournaments through the season.",
@@ -140,7 +140,7 @@ const am: Partial<Record<Key, string>> = {
   kitTitle: "የቡድን ልብስ", kitLead: "ለልምምድና ለጨዋታ የአካዳሚው ኦፊሴላዊ ልብስ።", sizes: "የመጠን መመሪያ",
   kitHome: "የሜዳ", kitAway: "የውጪ", kitTraining: "የልምምድ", thSize: "መጠን", thAge: "እድሜ",
 
-  whyTitle: "ለምን አዳማ ፖሊ FC",
+  whyTitle: "ለምን ኮሌጅ አዳማ FC",
   whyLead: "ተጫዋቹን በሁለንተናዊ መልኩ እናሳድጋለን፦ በሜዳ ላይ ክህሎት፣ በስልጠና ወቅት ዲሲፕሊን እና ከሜዳ ውጪ ክብር።",
   w1t: "ብቁ አሰልጣኞች", w1: "ለእያንዳንዱ የእድሜ ቡድን የሚመጥኑ የስልጠና እቅዶች።",
   w2t: "የጨዋታ ልምድ", w2: "በውድድር ዘመኑ ወዳጃዊ ጨዋታዎች እና ውድድሮች።",
@@ -241,7 +241,7 @@ const om: Partial<Record<Key, string>> = {
   kitTitle: "Uffata garee", kitLead: "Uffata akaadamii leenjii fi taphaaf.", sizes: "Qajeelfama hamma",
   kitHome: "Mana", kitAway: "Ala", kitTraining: "Leenjii", thSize: "Hamma", thAge: "Umurii",
 
-  whyTitle: "Maaliif Adama Poly FC",
+  whyTitle: "Maaliif College Adama FC",
   whyLead: "Taphataa guutummaatti guddisna: dandeettii dirree irratti, sirna leenjii keessatti fi kabaja dirree alatti.",
   w1t: "Leenjistoota ogummaa qaban", w1: "Karoorri leenjii garee umurii hundaaf mijatu.",
   w2t: "Muuxannoo taphaa", w2: "Taphoota michummaa fi dorgommiiwwan yeroo ispoortii guutuu.",
