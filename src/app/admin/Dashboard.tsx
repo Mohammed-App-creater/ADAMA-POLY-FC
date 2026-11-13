@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, type ChangeEvent, type FormEvent, type ReactNode } from "react";
 import {
   Lightbox, StatusBadge, api, compressImage, fmtDate, roleLabel, useCollection, useLang, useSettings,
-  type Added, type Fixture, type GalleryPhoto, type Message, type NewsItem, type Payment, type Player, type TrainingTime,
+  type Added, type Fixture, type GalleryPhoto, type Message, type NewsItem, type Payment, type Player, type Story, type TrainingTime,
 } from "@/components/client";
 import { ALL_GROUPS, GROUPS, ROLE_KEYS, type StaffMember } from "@/lib/data";
 import { isKey, type Key } from "@/lib/i18n";
@@ -56,6 +56,13 @@ const TRAINING: Field[] = [
   { name: "group", label: "Age group", options: [...GROUPS] },
   { name: "days", label: "Days (for example: Mon, Wed, Fri)", required: true },
   { name: "time", label: "Time (for example: 4:30 – 6:00 PM)", required: true },
+];
+const STORY: Field[] = [
+  PHOTO,
+  { name: "name", label: "Player name", required: true },
+  { name: "year", label: "Year (for example: 2026)", type: "number" },
+  { name: "achievement", label: "Where they are now (for example: Signed for Adama City FC)", required: true, wide: true },
+  { name: "story", label: "Their story (optional)", type: "textarea", wide: true },
 ];
 const GALLERY_FIELDS: Field[] = [
   { name: "photo", label: "Photo", type: "photo" },
@@ -283,7 +290,7 @@ function Panel({ title, action, children }: { title: string; action?: ReactNode;
   );
 }
 
-const SECTIONS = ["Overview", "Payments", "Players", "Squads", "Coaches", "Training", "Fixtures", "News", "Gallery", "Messages", "Settings"] as const;
+const SECTIONS = ["Overview", "Payments", "Players", "Squads", "Coaches", "Training", "Fixtures", "News", "Success", "Gallery", "Messages", "Settings"] as const;
 type Section = (typeof SECTIONS)[number];
 
 export default function Dashboard() {
@@ -306,6 +313,7 @@ export default function Dashboard() {
   const squad = useCollection<Added>("squadPlayers");
   const training = useCollection<TrainingTime>("schedule");
   const gallery = useCollection<GalleryPhoto>("gallery");
+  const stories = useCollection<Story>("stories");
   const { settings, reload: reloadSettings } = useSettings();
   const fixtures = useCollection<Fixture>("fixtures");
   const news = useCollection<NewsItem>("news");
@@ -403,7 +411,7 @@ export default function Dashboard() {
       <aside className="side">
         <Link className="side-brand" href="/">
           <i><Image src="/images/crest.png" alt="" width={38} height={38} /></i>
-          <span>COLLEGE ADAMA FC<small>Admin</small></span>
+          <span>COLLEGE ADAMA<small>Football Academy · Admin</small></span>
         </Link>
         <nav aria-label="Admin sections">
           {SECTIONS.map((s) => (
@@ -604,6 +612,20 @@ export default function Dashboard() {
                 <button className="btn sm badb" type="button" onClick={() => remove("news", n.id, news.reload, "post")}>Delete</button>
               </div>
             )) : <p className="empty">No posts yet.</p>}
+          </Panel>
+        )}
+
+        {section === "Success" && (
+          <Panel title="Success stories" action={<button className="btn sm" type="button" onClick={() => openForm("Add success story", "stories", STORY, stories.reload)}>+ Add player</button>}>
+            <p className="muted">Players from the academy who reached a club, a national team or another big step. They appear on the Success stories page, and the newest three on the home page.</p>
+            {stories.rows.length ? [...stories.rows].sort((a, b) => (b.year || "").localeCompare(a.year || "")).map((s) => (
+              <div className="rowcard" key={s.id}>
+                <Avatar src={s.photo} name={s.name} onOpen={setPhoto} />
+                <div className="grow"><b>{s.name}</b><div className="muted">{[s.year, s.achievement].filter(Boolean).join(" · ")}</div></div>
+                <button className="btn sm plain" type="button" onClick={() => openForm("Edit success story", "stories", STORY, stories.reload, s)}>Edit</button>
+                <button className="btn sm badb" type="button" onClick={() => remove("stories", s.id, stories.reload, "success story")}>Delete</button>
+              </div>
+            )) : <p className="empty">No success stories yet.</p>}
           </Panel>
         )}
 

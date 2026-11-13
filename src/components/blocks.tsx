@@ -2,7 +2,7 @@
 // Content blocks reused on more than one page.
 import Link from "next/link";
 import { KITS, PROGRAMS, type KitDesign } from "@/lib/data";
-import { fmtDate, useCollection, useLang, type Fixture, type NewsItem, type TrainingTime } from "./client";
+import { fmtDate, useCollection, useLang, type Fixture, type NewsItem, type Story, type TrainingTime } from "./client";
 
 export function ProgramCards() {
   const { t } = useLang();
@@ -50,6 +50,29 @@ export function FixtureList({ rows }: { rows: Fixture[] }) {
             ? <div className="score">{f.scoreUs} – {f.scoreThem}</div>
             : <span className="badge b-new">{t(f.side === "away" ? "away" : "home")}</span>}
         </div>
+      ))}
+    </div>
+  );
+}
+
+/** Cards for players who went on to bigger things (newest first). */
+export function StoryCards({ rows, limit }: { rows: Story[]; limit?: number }) {
+  const list = [...rows].sort((a, b) => (b.year || "").localeCompare(a.year || "")).slice(0, limit);
+  return (
+    <div className="grid" style={{ gridTemplateColumns: "repeat(auto-fill, minmax(270px, 1fr))" }}>
+      {list.map((s) => (
+        <article className="card person story" key={s.id}>
+          <div className="photo">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            {s.photo ? <img src={s.photo} alt={s.name} loading="lazy" /> : <span aria-hidden="true">{s.name.charAt(0)}</span>}
+            {s.year && <em>{s.year}</em>}
+          </div>
+          <div className="body">
+            <h3>{s.name}</h3>
+            <div className="tagline">{s.achievement}</div>
+            {s.story && <p>{s.story}</p>}
+          </div>
+        </article>
       ))}
     </div>
   );

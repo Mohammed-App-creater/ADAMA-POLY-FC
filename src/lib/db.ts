@@ -5,7 +5,7 @@
 //  - A JSON file plus an uploads folder under ./data for local development.
 import { promises as fs } from "fs";
 import path from "path";
-import { CONTACT, GALLERY, GROUPS, OLD_PHONE, SCHEDULE, STAFF, baseSquad } from "./data";
+import { CONTACT, GALLERY, GROUPS, OLD_ADDRESS, OLD_PHONE, SCHEDULE, STAFF, baseSquad } from "./data";
 
 export type Row = { id: string; createdAt: number; [k: string]: unknown };
 
@@ -169,7 +169,7 @@ function readOnlyStore(): Store {
     all: async (col) => byAge([...(data[col] ?? [])]),
     get: async (col, id) => data[col]?.find((r) => r.id === id) ?? null,
     put: no, del: no, markSeeded: no, putFile: no, delFile: no,
-    seeded: async () => [...Object.keys(data), "contact-2026-11"], // nothing to seed or migrate
+    seeded: async () => [...Object.keys(data), "contact-2026-11", "name-2026-11"], // nothing to seed or migrate
     getFile: async () => null,
   };
 }
@@ -206,6 +206,15 @@ async function db(): Promise<Store> {
         await s.put("settings", [site]);
       }
       await s.markSeeded("contact-2026-11");
+    }
+    // One-time: the address still carrying the old academy name.
+    if (!done.has("name-2026-11")) {
+      const site = await s.get("settings", "site");
+      if (site && site.address === OLD_ADDRESS) {
+        site.address = CONTACT.address;
+        await s.put("settings", [site]);
+      }
+      await s.markSeeded("name-2026-11");
     }
   })();
   try {

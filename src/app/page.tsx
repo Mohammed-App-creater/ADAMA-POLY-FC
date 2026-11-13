@@ -1,8 +1,8 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { CallToAction, FixtureList, KitCards, NewsList, ProgramCards, upcomingOf } from "@/components/blocks";
-import { useCollection, useLang, useSquads, type Fixture, type NewsItem, type TrainingTime } from "@/components/client";
+import { CallToAction, FixtureList, KitCards, NewsList, ProgramCards, StoryCards, upcomingOf } from "@/components/blocks";
+import { useCollection, useLang, useSquads, type Fixture, type NewsItem, type Story, type TrainingTime } from "@/components/client";
 import { Counter, Marquee, RiseText } from "@/components/fx";
 import { GROUPS } from "@/lib/data";
 import type { Key } from "@/lib/i18n";
@@ -17,6 +17,7 @@ export default function Home() {
   const sessions = times.rows.reduce((n, s) => n + s.days.split(",").length, 0);
   const fixtures = useCollection<Fixture>("fixtures");
   const news = useCollection<NewsItem>("news");
+  const stories = useCollection<Story>("stories");
 
   return (
     <>
@@ -86,6 +87,21 @@ export default function Home() {
           <ProgramCards />
         </div>
       </section>
+
+      {stories.rows.length > 0 && (
+        <section>
+          <div className="wrap">
+            <div className="sec-head">
+              <div>
+                <h2>{t("successTitle")}</h2>
+                <p className="lead">{t("successLead")}</p>
+              </div>
+              <Link className="link" href="/success">{t("viewAll")} →</Link>
+            </div>
+            <StoryCards rows={stories.rows} limit={3} />
+          </div>
+        </section>
+      )}
 
       <section className="dark">
         <span className="glow" style={{ left: -160, top: -160 }} aria-hidden="true" />

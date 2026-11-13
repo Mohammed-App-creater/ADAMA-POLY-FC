@@ -91,6 +91,14 @@ export const COLLECTIONS: Record<string, Def> = {
     publicCreate: false,
     upsert: true,
   },
+  // Former players who moved on to a club, a national team, a scholarship...
+  stories: {
+    fields: { name: str(120), achievement: str(200), year: str(4), story: str(3000) },
+    required: ["name", "achievement"],
+    publicRead: true,
+    publicCreate: false,
+    photo: true,
+  },
   gallery: {
     // coach: id of the coach the photo belongs to; empty for the training gallery.
     fields: { caption: str(160), coach: str(80) },

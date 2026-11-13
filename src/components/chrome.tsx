@@ -15,6 +15,7 @@ const LINKS: { href: string; key: Key }[] = [
   { href: "/schedule", key: "navSchedule" },
   { href: "/news", key: "navNews" },
   { href: "/gallery", key: "navGallery" },
+  { href: "/success", key: "navSuccess" },
   { href: "/kit", key: "navKit" },
   { href: "/pay", key: "navPay" },
   { href: "/receipts", key: "navReceipts" },
@@ -64,7 +65,7 @@ export function Nav() {
       <div className="wrap nav-row">
         <Link className="brand" href="/">
           <Image src="/images/crest.png" alt="" width={44} height={44} priority />
-          <span>COLLEGE ADAMA FC</span>
+          <span>COLLEGE ADAMA<small>FOOTBALL ACADEMY</small></span>
         </Link>
         <ul className={`nav-links${open ? " open" : ""}`} id="nav-links">
           {LINKS.map((l) => (
@@ -97,13 +98,13 @@ export function Footer() {
         <div>
           <div className="brand">
             <i><Image src="/images/crest.png" alt="" width={58} height={58} /></i>
-            <span>COLLEGE ADAMA FC</span>
+            <span>COLLEGE ADAMA<small>FOOTBALL ACADEMY</small></span>
           </div>
           <p>{t("heroEyebrow")}</p>
         </div>
         <div>
           <h2>{t("quickLinks")}</h2>
-          <ul>{col([["/about", "navAbout"], ["/programs", "navPrograms"], ["/squads", "navSquads"], ["/coaches", "navCoaches"], ["/schedule", "navSchedule"], ["/gallery", "navGallery"]])}</ul>
+          <ul>{col([["/about", "navAbout"], ["/programs", "navPrograms"], ["/squads", "navSquads"], ["/coaches", "navCoaches"], ["/schedule", "navSchedule"], ["/gallery", "navGallery"], ["/success", "navSuccess"]])}</ul>
         </div>
         <div>
           <h2>{t("forParents")}</h2>

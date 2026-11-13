@@ -8,11 +8,12 @@ export const ALL_GROUPS = [...GROUPS, "Senior"] as const;
 export type Group = (typeof GROUPS)[number];
 
 // Starting contact details. Staff change them under Admin > Settings.
+export const OLD_ADDRESS = "Adama Polytechnic College sports ground, Adama"; // from before the name was corrected
 export const OLD_PHONE = "+251 ___ ___ ___"; // placeholder used before the real number was known
 export const CONTACT = {
   phone: "+251 91 341 2418",
   email: "info@adamapoly.example",
-  address: "Adama Polytechnic College sports ground, Adama",
+  address: "College Adama sports ground, Adama",
   bankAccount: "1000432933834 (College Adama Football Academy)", // shown on the Pay page
 };
 

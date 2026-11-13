@@ -93,6 +93,8 @@ html.scrolled .nav { border-color: var(--line); box-shadow: 0 10px 30px -18px rg
 .nav-row { display: flex; align-items: center; gap: 18px; height: 72px; transition: height 0.3s var(--ease); }
 html.scrolled .nav-row { height: 60px; }
 .brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); font: 800 23px/1 var(--f-d); letter-spacing: 0.06em; white-space: nowrap; }
+.brand small { display: block; margin-top: 4px; font-size: 12px; letter-spacing: 0.17em; color: var(--gold-d); }
+.footer .brand small { color: var(--gold); }
 .brand img { transition: transform 0.4s var(--ease); }
 .brand:hover img { transform: rotate(-8deg) scale(1.08); }
 .nav-links { display: flex; align-items: center; gap: 2px; list-style: none; margin: 0 0 0 auto; padding: 0; }
@@ -107,7 +109,7 @@ html.scrolled .nav-row { height: 60px; }
 .burger[aria-expanded="true"] span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
 .burger[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
 .burger[aria-expanded="true"] span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
-@media (max-width: 1320px) {
+@media (max-width: 1400px) {
   .burger { display: flex; }
   .nav-tools { margin-left: auto; }
   .nav-links { display: none; position: absolute; left: 0; right: 0; top: 100%; margin: 0; padding: 12px 20px 22px; background: #fff; border-bottom: 1px solid var(--line); box-shadow: var(--shadow); flex-direction: column; align-items: stretch; gap: 0; max-height: calc(100vh - 60px); overflow-y: auto; }
@@ -519,3 +521,8 @@ button.avatar { cursor: zoom-in; }
 .person .thumbs button { padding: 0; border: 0; border-radius: 8px; overflow: hidden; background: #111; cursor: zoom-in; }
 .person .thumbs img { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; transition: transform 0.3s var(--ease); }
 .person .thumbs button:hover img { transform: scale(1.08); }
+
+/* Success stories */
+.story .photo { position: relative; }
+.story .photo em { position: absolute; left: 14px; bottom: 14px; padding: 5px 12px; border-radius: 999px; background: var(--gold); color: var(--ink); font: 800 17px/1 var(--f-d); font-style: normal; letter-spacing: 0.06em; }
+.story .body p { white-space: pre-line; margin: 12px 0 0; }

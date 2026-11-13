@@ -36,7 +36,7 @@ const en = {
   kitTitle: "Team kit", kitLead: "Official academy kit for training and matches.", sizes: "Size guide",
   kitHome: "Home", kitAway: "Away", kitTraining: "Training", thSize: "Size", thAge: "Age",
 
-  whyTitle: "Why College Adama FC",
+  whyTitle: "Why College Adama Football Academy",
   whyLead: "We develop the whole player: skill on the pitch, discipline in training and respect off it.",
   w1t: "Qualified coaches", w1: "Training plans that match each age group.",
   w2t: "Match experience", w2: "Friendly games and tournaments through the season.",
@@ -44,7 +44,7 @@ const en = {
   w4t: "Character first", w4: "Teamwork, discipline and fair play in every session.",
 
   aboutTitle: "About the academy",
-  aboutLead: "A football home for young players in Adama, run from the Adama Polytechnic College sports ground.",
+  aboutLead: "A football home for young players in Adama, run from the College Adama sports ground.",
   aboutText: "The academy gives boys and girls from under 10 to under 17 a safe, organised place to learn the game. Players train in small groups with qualified coaches, play regular matches and are expected to do well in school as well as on the pitch.",
   missionT: "Our mission", mission: "To develop skilled, disciplined and confident young footballers, and to help every player reach their best level.",
   visionT: "Our vision", vision: "To be the leading youth football academy in Adama and a trusted path to clubs and national youth teams.",
@@ -54,6 +54,8 @@ const en = {
   v3t: "Respect", v3: "For teammates, opponents, referees and coaches.",
   v4t: "Education", v4: "School comes first. Football and study go together.",
 
+  navSuccess: "Success", successTitle: "Success stories", successLead: "Players from our academy who went on to bigger stages.",
+  noSuccess: "Stories are coming soon.",
   galleryTitle: "Training gallery", galleryLead: "Moments from our training sessions.",
   newsTitle: "News", newsLead: "Announcements from the academy.", noNews: "No news yet.",
   latestNews: "Latest news", viewAll: "View all",
@@ -140,7 +142,7 @@ const am: Partial<Record<Key, string>> = {
   kitTitle: "የቡድን ልብስ", kitLead: "ለልምምድና ለጨዋታ የአካዳሚው ኦፊሴላዊ ልብስ።", sizes: "የመጠን መመሪያ",
   kitHome: "የሜዳ", kitAway: "የውጪ", kitTraining: "የልምምድ", thSize: "መጠን", thAge: "እድሜ",
 
-  whyTitle: "ለምን ኮሌጅ አዳማ FC",
+  whyTitle: "ለምን ኮሌጅ አዳማ የእግር ኳስ አካዳሚ",
   whyLead: "ተጫዋቹን በሁለንተናዊ መልኩ እናሳድጋለን፦ በሜዳ ላይ ክህሎት፣ በስልጠና ወቅት ዲሲፕሊን እና ከሜዳ ውጪ ክብር።",
   w1t: "ብቁ አሰልጣኞች", w1: "ለእያንዳንዱ የእድሜ ቡድን የሚመጥኑ የስልጠና እቅዶች።",
   w2t: "የጨዋታ ልምድ", w2: "በውድድር ዘመኑ ወዳጃዊ ጨዋታዎች እና ውድድሮች።",
@@ -148,7 +150,7 @@ const am: Partial<Record<Key, string>> = {
   w4t: "መጀመሪያ ባህሪ", w4: "በእያንዳንዱ ስልጠና የቡድን ስራ፣ ዲሲፕሊን እና ፍትሃዊ ጨዋታ።",
 
   aboutTitle: "ስለ አካዳሚው",
-  aboutLead: "በአዳማ ፖሊቴክኒክ ኮሌጅ የስፖርት ሜዳ የሚካሄድ የወጣት ተጫዋቾች የእግር ኳስ ቤት።",
+  aboutLead: "በኮሌጅ አዳማ የስፖርት ሜዳ የሚካሄድ የወጣት ተጫዋቾች የእግር ኳስ ቤት።",
   aboutText: "አካዳሚው ከ10 ዓመት በታች እስከ 17 ዓመት በታች ላሉ ልጆች እግር ኳስን የሚማሩበት ደህንነቱ የተጠበቀና የተደራጀ ቦታ ይሰጣል። ተጫዋቾች በትናንሽ ቡድኖች ከብቁ አሰልጣኞች ጋር ይሰለጥናሉ፣ መደበኛ ጨዋታዎችን ያደርጋሉ፣ በትምህርታቸውም ጎበዝ እንዲሆኑ ይጠበቃል።",
   missionT: "ተልዕኳችን", mission: "ክህሎት፣ ዲሲፕሊን እና በራስ መተማመን ያላቸው ወጣት ተጫዋቾችን ማፍራት፤ እያንዳንዱ ተጫዋች የተሻለ ደረጃው ላይ እንዲደርስ መርዳት።",
   visionT: "ራዕያችን", vision: "በአዳማ ቀዳሚ የወጣቶች የእግር ኳስ አካዳሚ መሆን እና ወደ ክለቦችና ብሔራዊ የወጣት ቡድኖች የሚያደርስ ታማኝ መንገድ መሆን።",
@@ -158,6 +160,8 @@ const am: Partial<Record<Key, string>> = {
   v3t: "ክብር", v3: "ለቡድን አጋሮች፣ ለተጋጣሚዎች፣ ለዳኞች እና ለአሰልጣኞች።",
   v4t: "ትምህርት", v4: "ትምህርት ይቀድማል። እግር ኳስና ትምህርት አብረው ይሄዳሉ።",
 
+  navSuccess: "ስኬቶች", successTitle: "የስኬት ታሪኮች", successLead: "ከአካዳሚያችን ወጥተው ወደ ትልቅ ደረጃ የደረሱ ተጫዋቾች።",
+  noSuccess: "ታሪኮች በቅርቡ ይመጣሉ።",
   galleryTitle: "የስልጠና ምስሎች", galleryLead: "ከስልጠና ጊዜያቶቻችን የተወሰዱ ምስሎች።",
   newsTitle: "ዜና", newsLead: "ከአካዳሚው የሚወጡ ማስታወቂያዎች።", noNews: "ገና ዜና የለም።",
   latestNews: "የቅርብ ዜና", viewAll: "ሁሉንም ይመልከቱ",
@@ -241,7 +245,7 @@ const om: Partial<Record<Key, string>> = {
   kitTitle: "Uffata garee", kitLead: "Uffata akaadamii leenjii fi taphaaf.", sizes: "Qajeelfama hamma",
   kitHome: "Mana", kitAway: "Ala", kitTraining: "Leenjii", thSize: "Hamma", thAge: "Umurii",
 
-  whyTitle: "Maaliif College Adama FC",
+  whyTitle: "Maaliif Akaadaamii Kubbaa Miilaa Kolleejjii Adaamaa",
   whyLead: "Taphataa guutummaatti guddisna: dandeettii dirree irratti, sirna leenjii keessatti fi kabaja dirree alatti.",
   w1t: "Leenjistoota ogummaa qaban", w1: "Karoorri leenjii garee umurii hundaaf mijatu.",
   w2t: "Muuxannoo taphaa", w2: "Taphoota michummaa fi dorgommiiwwan yeroo ispoortii guutuu.",
@@ -251,6 +255,8 @@ const om: Partial<Record<Key, string>> = {
   aboutTitle: "Waa'ee akaadaamichaa", missionT: "Ergama keenya", visionT: "Mul'ata keenya", valuesT: "Duudhaalee keenya",
   v1t: "Naamusa", v2t: "Hojii garee", v3t: "Kabaja", v4t: "Barnoota",
 
+  navSuccess: "Milkaa'ina", successTitle: "Seenaa milkaa'inaa", successLead: "Taphattoota akaadaamii keenya irraa gara sadarkaa olaanaatti ce'an.",
+  noSuccess: "Seenaaleen dhiyootti ni dhufu.",
   galleryTitle: "Suuraalee leenjii", galleryLead: "Yeroo leenjii keenyaa irraa fakkeenyawwan.",
   newsTitle: "Oduu", noNews: "Amma oduun hin jiru.", latestNews: "Oduu haaraa", viewAll: "Hunda ilaali",
 
