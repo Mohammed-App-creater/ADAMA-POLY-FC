@@ -1,10 +1,8 @@
-import { promises as fs } from "fs";
-import path from "path";
 import { NextResponse } from "next/server";
 import { isStaff } from "@/lib/auth";
 import { COLLECTIONS, Invalid, clean } from "@/lib/collections";
-import { UPLOAD_DIR, newId, tx, type Row } from "@/lib/db";
-import { savePhoto } from "@/lib/photos";
+import { NotConfigured, files, get, list, newId, put, type Row } from "@/lib/db";
+import { decodeJpeg, savePhoto } from "@/lib/photos";
 
 type Ctx = { params: Promise<{ collection: string }> };
 const err = (message: string, status: number) => NextResponse.json({ error: message }, { status });
@@ -15,12 +13,15 @@ export async function GET(_req: Request, { params }: Ctx) {
   if (!def) return err("Not found", 404);
   const staff = await isStaff();
   if (!staff && !def.publicRead) return err("Staff only", 401);
-  const rows = await tx((db) => db[collection] ?? []);
-  const view = !staff && def.publicView ? rows.map(def.publicView) : rows;
-  return NextResponse.json(view, { headers: { "Cache-Control": "no-store" } });
+  try {
+    const rows = await list(collection);
+    const view = !staff && def.publicView ? rows.map(def.publicView) : rows;
+    return NextResponse.json(view, { headers: { "Cache-Control": "no-store" } });
+  } catch (e) {
+    console.error(e);
+    return err("Could not load", 500);
+  }
 }
-
-const MAX_RECEIPT = 1_500_000; // bytes of base64
 
 export async function POST(req: Request, { params }: Ctx) {
   const { collection } = await params;
@@ -40,37 +41,32 @@ export async function POST(req: Request, { params }: Ctx) {
   try {
     const data = clean(def, body, staff, false);
     let id = newId();
+    let old: Row | null = null;
     if (def.upsert) {
       if (typeof body.id !== "string" || !/^[\w-]{1,80}$/.test(body.id)) throw new Invalid("Invalid id");
       id = body.id;
+      old = await get(collection, id);
     }
 
     if (collection === "payments") {
       // The receipt photo arrives as a JPEG data URL; store it as a file.
-      const m = typeof body.receipt === "string" && /^data:image\/jpeg;base64,([A-Za-z0-9+/=]+)$/.exec(body.receipt);
-      if (!m) throw new Invalid("Receipt photo is required");
-      if (m[1].length > MAX_RECEIPT) throw new Invalid("Receipt photo is too large");
-      await fs.mkdir(UPLOAD_DIR, { recursive: true });
-      await fs.writeFile(path.join(UPLOAD_DIR, `${id}.jpg`), Buffer.from(m[1], "base64"));
+      if (!body.receipt) throw new Invalid("Receipt photo is required");
+      await files.put(`${id}.jpg`, decodeJpeg(body.receipt, "Receipt photo"));
       data.receipt = `/api/uploads/${id}.jpg`;
     }
 
     if (def.photo && staff) {
-      const old = def.upsert ? await tx((db) => db[collection]?.find((r) => r.id === id)?.photo) : undefined;
-      const photo = await savePhoto(id, body.photo, old);
-      if (photo !== undefined) data.photo = photo;
+      if (def.photo === "required" && !body.photo && !old?.photo) throw new Invalid("Please choose a photo");
+      const photo = await savePhoto(id, body.photo, old?.photo);
+      data.photo = photo ?? old?.photo ?? "";
     }
 
-    const row: Row = { id, createdAt: Date.now(), ...data };
-    await tx((db) => {
-      const list = (db[collection] ??= []);
-      const i = list.findIndex((r) => r.id === id);
-      if (i >= 0) list[i] = row;
-      else list.push(row);
-    }, true);
+    const row: Row = { id, createdAt: old?.createdAt ?? Date.now(), ...data };
+    await put(collection, row);
     return NextResponse.json(row, { status: 201 });
   } catch (e) {
     if (e instanceof Invalid) return err(e.message, 400);
+    if (e instanceof NotConfigured) return err(e.message, 503);
     console.error(e);
     return err("Could not save", 500);
   }

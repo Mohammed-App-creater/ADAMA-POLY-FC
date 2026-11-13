@@ -1,12 +1,11 @@
 "use client";
 import Image from "next/image";
 import { PageHeader, roleLabel, useCollection, useLang } from "@/components/client";
-import { STAFF, type StaffMember } from "@/lib/data";
+import type { StaffMember } from "@/lib/data";
 
 export default function Coaches() {
   const { t } = useLang();
-  const extra = useCollection<StaffMember>("staff");
-  const list = [...STAFF, ...extra.rows];
+  const list = useCollection<StaffMember>("staff").rows;
   return (
     <>
       <PageHeader title={t("coachTitle")} lead={t("coachLead")} />
@@ -17,7 +16,7 @@ export default function Coaches() {
               <article className="card person" key={s.id ?? i}>
                 <div className="photo">
                   {s.photo
-                    ? <Image src={s.photo} alt={s.name} width={600} height={450} />
+                    ? <Image src={s.photo} alt={s.name} width={600} height={450} unoptimized={s.photo.startsWith("/api/")} />
                     : <span aria-hidden="true">{s.name.charAt(0)}</span>}
                 </div>
                 <div className="body">

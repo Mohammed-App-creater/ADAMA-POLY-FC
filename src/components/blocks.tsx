@@ -1,15 +1,16 @@
 "use client";
 // Content blocks reused on more than one page.
 import Link from "next/link";
-import { KITS, PROGRAMS, SCHEDULE, type KitDesign } from "@/lib/data";
-import { fmtDate, useLang, type Fixture, type NewsItem } from "./client";
+import { KITS, PROGRAMS, type KitDesign } from "@/lib/data";
+import { fmtDate, useCollection, useLang, type Fixture, type NewsItem, type TrainingTime } from "./client";
 
 export function ProgramCards() {
   const { t } = useLang();
+  const times = useCollection<TrainingTime>("schedule").rows;
   return (
     <div className="grid">
       {PROGRAMS.map((p) => {
-        const s = SCHEDULE.find((x) => x.group === p.group);
+        const s = times.find((x) => x.group === p.group);
         return (
           <article className="card lift prog" key={p.group}>
             <div className="big">{p.group}</div>

@@ -1,5 +1,6 @@
-// Fixed site content. Edit this file to change contact details, the timetable,
-// the built-in coaches or the sample squad names.
+// Starter content. Contact details, the timetable, coaches, squads and gallery
+// are copied from here into the database the first time the site runs; after
+// that staff edit them from the admin and changes to this file have no effect.
 import type { Key } from "./i18n";
 
 export const GROUPS = ["U10", "U13", "U15", "U17"] as const;
@@ -67,7 +68,7 @@ const posOf = (i: number): Pos => (i < 2 ? "GK" : i < 8 ? "DEF" : i < 14 ? "MID"
 
 export type SquadPlayer = {
   id: string; name: string; group: string; pos: Pos; number: string;
-  starter?: boolean; foot?: "R" | "L"; added?: boolean; photo?: string;
+  starter?: boolean; foot?: "R" | "L"; photo?: string;
 };
 
 export function baseSquad(group: Group): SquadPlayer[] {

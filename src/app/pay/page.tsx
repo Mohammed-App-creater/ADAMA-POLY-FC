@@ -1,12 +1,13 @@
 "use client";
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
-import { Notice, PageHeader, api, compressImage, useLang, useRoster } from "@/components/client";
-import { ALL_GROUPS, CONTACT } from "@/lib/data";
+import { Notice, PageHeader, api, compressImage, useLang, useRoster, useSettings } from "@/components/client";
+import { ALL_GROUPS } from "@/lib/data";
 
 export default function Pay() {
   const { t } = useLang();
   const roster = useRoster();
+  const { settings } = useSettings();
   const [group, setGroup] = useState<string>("U10");
   const [playerId, setPlayerId] = useState("");
   const [state, setState] = useState<{ ok: boolean; text: string } | null>(null);
@@ -43,7 +44,7 @@ export default function Pay() {
               <li><b>{t("step2")}</b><span>{t("step2d")}</span></li>
               <li><b>{t("step3")}</b><span>{t("step3d")}</span></li>
             </ol>
-            {CONTACT.bankAccount && <p><b>{t("bankAccount")}:</b> {CONTACT.bankAccount}</p>}
+            {settings.bankAccount && <p><b>{t("bankAccount")}:</b> {settings.bankAccount}</p>}
             <p className="muted">{t("payNote")} <Link className="link" href="/join">{t("btnRegister")} →</Link></p>
           </div>
           <form className="card" onSubmit={submit} noValidate>

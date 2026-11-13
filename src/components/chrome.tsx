@@ -4,9 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
-import { CONTACT } from "@/lib/data";
 import { LANGS, type Key, type Lang } from "@/lib/i18n";
-import { useLang } from "./client";
+import { useLang, useSettings } from "./client";
 
 const LINKS: { href: string; key: Key; main?: boolean }[] = [
   { href: "/about", key: "navAbout", main: true },
@@ -88,6 +87,7 @@ export function Nav() {
 
 export function Footer() {
   const { t } = useLang();
+  const { settings } = useSettings();
   const path = usePathname();
   if (path.startsWith("/admin")) return null;
   const col = (keys: [string, Key][]) => keys.map(([href, k]) => <li key={href}><Link href={href}>{t(k)}</Link></li>);
@@ -112,9 +112,9 @@ export function Footer() {
         <div>
           <h2>{t("navContact")}</h2>
           <ul>
-            <li>{CONTACT.phone}</li>
-            <li>{CONTACT.email}</li>
-            <li>{CONTACT.address}</li>
+            <li>{settings.phone}</li>
+            <li>{settings.email}</li>
+            <li>{settings.address}</li>
             <li><Link href="/admin">{t("navStaff")}</Link></li>
           </ul>
         </div>

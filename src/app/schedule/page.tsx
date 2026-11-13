@@ -1,11 +1,11 @@
 "use client";
 import { FixtureList, resultsOf, upcomingOf } from "@/components/blocks";
-import { PageHeader, useCollection, useLang, type Fixture } from "@/components/client";
-import { SCHEDULE } from "@/lib/data";
+import { PageHeader, useCollection, useLang, type Fixture, type TrainingTime } from "@/components/client";
 
 export default function Schedule() {
   const { t } = useLang();
   const { rows } = useCollection<Fixture>("fixtures");
+  const times = useCollection<TrainingTime>("schedule").rows;
   return (
     <>
       <PageHeader title={t("schedTitle")} lead={t("schedLead")} />
@@ -14,7 +14,7 @@ export default function Schedule() {
           <div className="scroll">
             <table className="tbl">
               <thead><tr><th>{t("thGroup")}</th><th>{t("thDays")}</th><th>{t("thTime")}</th></tr></thead>
-              <tbody>{SCHEDULE.map((s) => <tr key={s.group}><td>{s.group}</td><td>{s.days}</td><td>{s.time}</td></tr>)}</tbody>
+              <tbody>{times.map((s) => <tr key={s.id}><td>{s.group}</td><td>{s.days}</td><td>{s.time}</td></tr>)}</tbody>
             </table>
           </div>
         </div>

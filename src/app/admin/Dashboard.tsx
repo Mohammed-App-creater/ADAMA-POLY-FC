@@ -6,8 +6,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState, type ChangeEvent, type FormEvent, type ReactNode } from "react";
 import {
-  Lightbox, StatusBadge, api, compressImage, fmtDate, roleLabel, useCollection, useLang, useRoster, useSquads,
-  type Added, type Fixture, type Message, type NewsItem, type Payment, type Player,
+  Lightbox, StatusBadge, api, compressImage, fmtDate, roleLabel, useCollection, useLang, useSettings,
+  type Added, type Fixture, type GalleryPhoto, type Message, type NewsItem, type Payment, type Player, type TrainingTime,
 } from "@/components/client";
 import { ALL_GROUPS, GROUPS, ROLE_KEYS, type StaffMember } from "@/lib/data";
 import { isKey, type Key } from "@/lib/i18n";
@@ -33,6 +33,8 @@ const SQUAD: Field[] = [
   { name: "group", label: "Age group", options: [...GROUPS] },
   { name: "pos", label: "Position", options: [["GK", "Goalkeeper"], ["DEF", "Defender"], ["MID", "Midfielder"], ["FWD", "Forward"]] },
   { name: "jersey", label: "Jersey number", type: "number" },
+  { name: "starter", label: "Role in the team", options: [["no", "Substitute"], ["yes", "Starter"]] },
+  { name: "foot", label: "Preferred foot", options: [["", "Not set"], ["R", "Right"], ["L", "Left"]] },
 ];
 const FIXTURE: Field[] = [
   { name: "group", label: "Our team", options: [...ALL_GROUPS] },
@@ -49,6 +51,21 @@ const NEWS: Field[] = [
   { name: "title", label: "Title", required: true },
   { name: "date", label: "Date", type: "date", required: true },
   { name: "body", label: "Text", type: "textarea", required: true, wide: true },
+];
+const TRAINING: Field[] = [
+  { name: "group", label: "Age group", options: [...GROUPS] },
+  { name: "days", label: "Days (for example: Mon, Wed, Fri)", required: true },
+  { name: "time", label: "Time (for example: 4:30 – 6:00 PM)", required: true },
+];
+const GALLERY_FIELDS: Field[] = [
+  { name: "photo", label: "Photo", type: "photo" },
+  { name: "caption", label: "Caption (optional)", wide: true },
+];
+const SETTINGS: Field[] = [
+  { name: "phone", label: "Phone", type: "tel" },
+  { name: "email", label: "Email", type: "email" },
+  { name: "address", label: "Address", wide: true },
+  { name: "bankAccount", label: "Bank account for fees (shown on the Pay page)", wide: true },
 ];
 const ROLES: Key[] = [...ROLE_KEYS, "r_second", "r_coach"];
 
@@ -181,7 +198,7 @@ function Panel({ title, action, children }: { title: string; action?: ReactNode;
   );
 }
 
-const SECTIONS = ["Overview", "Payments", "Players", "Squads", "Coaches", "Fixtures", "News", "Messages"] as const;
+const SECTIONS = ["Overview", "Payments", "Players", "Squads", "Coaches", "Training", "Fixtures", "News", "Gallery", "Messages", "Settings"] as const;
 type Section = (typeof SECTIONS)[number];
 
 export default function Dashboard() {
@@ -194,17 +211,18 @@ export default function Dashboard() {
   const [q, setQ] = useState("");
   const [gf, setGf] = useState("");
   const [payFilter, setPayFilter] = useState("pending");
-  const [jGroup, setJGroup] = useState("U10");
+  const [sGroup, setSGroup] = useState("U10");
 
   const players = useCollection<Player>("players");
   const payments = useCollection<Payment>("payments");
   const staff = useCollection<StaffMember & { id: string }>("staff");
-  const added = useCollection<Added>("squadPlayers");
+  const squad = useCollection<Added>("squadPlayers");
+  const training = useCollection<TrainingTime>("schedule");
+  const gallery = useCollection<GalleryPhoto>("gallery");
+  const { settings, reload: reloadSettings } = useSettings();
   const fixtures = useCollection<Fixture>("fixtures");
   const news = useCollection<NewsItem>("news");
   const messages = useCollection<Message>("messages");
-  const { squads, reload: reloadSquads } = useSquads();
-  const roster = useRoster();
 
   // Remember the open section in the address bar so a refresh keeps it.
   useEffect(() => {
@@ -232,12 +250,16 @@ export default function Dashboard() {
   const remove = (col: string, id: string, reload: () => void, what: string) => {
     if (confirm(`Delete this ${what}? This cannot be undone.`)) run(() => api("DELETE", `/api/${col}/${id}`), reload, "Deleted");
   };
-  /** Open the add/edit sheet for a collection. */
-  const openForm = (title: string, col: string, fields: Field[], reload: () => void, row?: Data & { id: string }, prepare: (d: Data) => Data = (d) => d) =>
+  /** Open the add/edit sheet for a collection. `defaults` pre-fills a new row. */
+  const openForm = (
+    title: string, col: string, fields: Field[], reload: () => void, row?: Data & { id: string },
+    prepare: (d: Data) => Data = (d) => d, defaults?: Data, method?: "POST",
+  ) =>
     setForm({
-      title, fields, initial: row,
+      title, fields, initial: row ?? defaults,
       save: async (d) => {
-        await api(row ? "PATCH" : "POST", row ? `/api/${col}/${row.id}` : `/api/${col}`, prepare(d));
+        const create = !row || method === "POST";
+        await api(create ? "POST" : "PATCH", create ? `/api/${col}` : `/api/${col}/${row.id}`, prepare(d));
         setForm(null);
         setToast({ ok: true, text: "Saved" });
         reload();
@@ -249,7 +271,8 @@ export default function Dashboard() {
     router.refresh();
   };
 
-  const reloadSquad = () => { added.reload(); reloadSquads(); };
+  const squads = squad.rows;
+  const shownSquad = squads.filter((p) => p.group === sGroup).sort((a, b) => (Number(a.jersey) || 999) - (Number(b.jersey) || 999));
   const pending = payments.rows.filter((p) => p.status === "pending").sort((a, b) => a.createdAt - b.createdAt);
   const unread = messages.rows.filter((m) => m.read !== "yes");
   const recent = [...players.rows].sort((a, b) => (b.createdAt ?? 0) - (a.createdAt ?? 0));
@@ -420,44 +443,30 @@ export default function Dashboard() {
         )}
 
         {section === "Squads" && (
-          <div className="panels">
-            <Panel title="Players added to squads" action={<button className="btn sm" type="button" onClick={() => openForm("Add squad player", "squadPlayers", SQUAD, reloadSquad)}>+ Add player</button>}>
-              <p className="muted">The 80 sample squad names come from the site's data file. Players you add here appear on the Squads page next to them.</p>
-              {added.rows.length ? added.rows.map((s) => (
-                <div className="rowcard" key={s.id}>
-                  <Avatar src={s.photo} name={s.name} onOpen={setPhoto} />
-                  <span className="jn">{s.jersey || "–"}</span>
-                  <div className="grow"><b>{s.name}</b><div className="muted">{s.group} · {s.pos}</div></div>
-                  <button className="btn sm plain" type="button" onClick={() => openForm("Edit squad player", "squadPlayers", SQUAD, reloadSquad, s)}>Edit</button>
-                  <button className="btn sm badb" type="button" onClick={() => remove("squadPlayers", s.id, reloadSquad, "squad player")}>Delete</button>
-                </div>
-              )) : <p className="empty">No added players yet.</p>}
-            </Panel>
-            <Panel title="Jersey numbers">
-              <RecordForm
-                key={jGroup}
-                button="Save jersey"
-                fields={[
-                  { name: "player", label: "Player", options: roster.filter((p) => p.group === jGroup).map((p) => [p.id, p.name] as [string, string]) },
-                  { name: "number", label: "Jersey number", type: "number", required: true },
-                ]}
-                onSubmit={async (d) => {
-                  await api("POST", "/api/jerseys", { id: d.player, number: d.number });
-                  setToast({ ok: true, text: "Jersey saved" });
-                  reloadSquads();
-                }}
-              />
-              <div className="tabs" role="tablist" style={{ margin: "18px 0 0" }}>
-                {ALL_GROUPS.map((g) => <button key={g} className="tab" role="tab" type="button" aria-selected={jGroup === g} onClick={() => setJGroup(g)}>{g}</button>)}
+          <Panel title="Squad players" action={<button className="btn sm" type="button" onClick={() => openForm("Add squad player", "squadPlayers", SQUAD, squad.reload, undefined, undefined, { group: sGroup })}>+ Add player</button>}>
+            <div className="tabs" role="tablist" style={{ margin: "0 0 14px" }}>
+              {GROUPS.map((g) => (
+                <button key={g} className="tab" role="tab" type="button" aria-selected={sGroup === g} onClick={() => setSGroup(g)}>
+                  {g} ({squads.filter((p) => p.group === g).length})
+                </button>
+              ))}
+            </div>
+            <p className="muted">These players appear on the Squads page. The site starts with sample names: edit or delete them and add your real players.</p>
+            {shownSquad.length ? shownSquad.map((p) => (
+              <div className="rowcard" key={p.id}>
+                <Avatar src={p.photo} name={p.name} onOpen={setPhoto} />
+                <span className="jn">{p.jersey || "–"}</span>
+                <div className="grow"><b>{p.name}</b><div className="muted">{p.group} · {p.pos}{p.starter === "yes" ? " · Starter" : ""}</div></div>
+                <button className="btn sm plain" type="button" onClick={() => openForm("Edit squad player", "squadPlayers", SQUAD, squad.reload, p)}>Edit</button>
+                <button className="btn sm badb" type="button" onClick={() => remove("squadPlayers", p.id, squad.reload, "squad player")}>Delete</button>
               </div>
-              <p className="muted" style={{ marginTop: 10 }}>Pick the age group first, then the player.</p>
-            </Panel>
-          </div>
+            )) : <p className="empty">No players in this squad yet.</p>}
+          </Panel>
         )}
 
         {section === "Coaches" && (
           <Panel title="Coaches and staff" action={<button className="btn sm" type="button" onClick={() => openForm("Add coach", "staff", staffFields, staff.reload, undefined, staffOut)}>+ Add coach</button>}>
-            <p className="muted">The three built-in coaches are set in the site's data file. Coaches you add here appear on the Coaches page after them.</p>
+            <p className="muted">Everyone listed here appears on the Coaches page.</p>
             {staff.rows.length ? staff.rows.map((s) => (
               <div className="rowcard" key={s.id}>
                 <Avatar src={s.photo} name={s.name} onOpen={setPhoto} />
@@ -465,7 +474,21 @@ export default function Dashboard() {
                 <button className="btn sm plain" type="button" onClick={() => openForm("Edit coach", "staff", staffFields, staff.reload, staffIn(s), staffOut)}>Edit</button>
                 <button className="btn sm badb" type="button" onClick={() => remove("staff", s.id, staff.reload, "coach")}>Delete</button>
               </div>
-            )) : <p className="empty">No added coaches yet.</p>}
+            )) : <p className="empty">No coaches yet.</p>}
+          </Panel>
+        )}
+
+        {section === "Training" && (
+          <Panel title="Weekly training times" action={<button className="btn sm" type="button" onClick={() => openForm("Set training time", "schedule", TRAINING, training.reload, undefined, (d) => ({ ...d, id: d.group }))}>+ Set training time</button>}>
+            <p className="muted">One row per age group, shown on the Schedule and Programs pages. Setting a time for a group that already has one replaces it.</p>
+            {training.rows.length ? training.rows.map((s) => (
+              <div className="rowcard" key={s.id}>
+                <span className="jn">{s.group.replace("U", "")}</span>
+                <div className="grow"><b>{s.group}</b><div className="muted">{s.days} · {s.time}</div></div>
+                <button className="btn sm plain" type="button" onClick={() => openForm(`Edit ${s.group} training time`, "schedule", TRAINING.slice(1), training.reload, s)}>Edit</button>
+                <button className="btn sm badb" type="button" onClick={() => remove("schedule", s.id, training.reload, "training time")}>Delete</button>
+              </div>
+            )) : <p className="empty">No training times yet.</p>}
           </Panel>
         )}
 
@@ -494,6 +517,26 @@ export default function Dashboard() {
           </Panel>
         )}
 
+        {section === "Gallery" && (
+          <Panel title="Gallery photos" action={<button className="btn sm" type="button" onClick={() => openForm("Add photo", "gallery", GALLERY_FIELDS, gallery.reload)}>+ Add photo</button>}>
+            {gallery.rows.length ? (
+              <div className="gal-admin">
+                {gallery.rows.map((g) => (
+                  <figure key={g.id}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={g.photo} alt={g.caption} loading="lazy" onClick={() => setPhoto(g.photo)} />
+                    <figcaption>{g.caption || <span className="muted">No caption</span>}</figcaption>
+                    <div className="btn-row">
+                      <button className="btn sm plain" type="button" onClick={() => openForm("Edit photo", "gallery", GALLERY_FIELDS, gallery.reload, g)}>Edit</button>
+                      <button className="btn sm badb" type="button" onClick={() => remove("gallery", g.id, gallery.reload, "photo")}>Delete</button>
+                    </div>
+                  </figure>
+                ))}
+              </div>
+            ) : <p className="empty">No photos yet.</p>}
+          </Panel>
+        )}
+
         {section === "Messages" && (
           <Panel title="Messages from the contact page">
             {messages.rows.length ? [...messages.rows].sort((a, b) => b.createdAt - a.createdAt).map((m) => (
@@ -509,6 +552,16 @@ export default function Dashboard() {
                 <button className="btn sm badb" type="button" onClick={() => remove("messages", m.id, messages.reload, "message")}>Delete</button>
               </div>
             )) : <p className="empty">No messages.</p>}
+          </Panel>
+        )}
+
+        {section === "Settings" && (
+          <Panel title="Contact details" action={<button className="btn sm" type="button" onClick={() => openForm("Edit contact details", "settings", SETTINGS, reloadSettings, { id: "site", ...settings }, (d) => ({ ...d, id: "site" }), undefined, "POST")}>Edit</button>}>
+            <p className="muted">Shown in the website footer, on the Contact page and on the Pay page.</p>
+            <div className="rowcard"><div className="grow"><b>Phone</b><div className="muted">{settings.phone || "Not set"}</div></div></div>
+            <div className="rowcard"><div className="grow"><b>Email</b><div className="muted">{settings.email || "Not set"}</div></div></div>
+            <div className="rowcard"><div className="grow"><b>Address</b><div className="muted">{settings.address || "Not set"}</div></div></div>
+            <div className="rowcard"><div className="grow"><b>Bank account for fees</b><div className="muted">{settings.bankAccount || "Not set"}</div></div></div>
           </Panel>
         )}
       </div>

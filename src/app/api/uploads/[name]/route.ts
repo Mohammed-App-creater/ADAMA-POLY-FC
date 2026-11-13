@@ -1,17 +1,12 @@
-import { promises as fs } from "fs";
-import path from "path";
-import { UPLOAD_DIR } from "@/lib/db";
+import { files } from "@/lib/db";
 
-// Serves receipt photos saved by the payments API.
+// Serves uploaded images: receipt photos and profile / gallery photos.
 export async function GET(_req: Request, { params }: { params: Promise<{ name: string }> }) {
   const { name } = await params;
-  if (!/^[\w-]+\.jpg$/.test(name)) return new Response("Not found", { status: 404 });
-  try {
-    const file = await fs.readFile(path.join(UPLOAD_DIR, name));
-    return new Response(new Uint8Array(file), {
-      headers: { "Content-Type": "image/jpeg", "Cache-Control": "private, max-age=3600" },
-    });
-  } catch {
-    return new Response("Not found", { status: 404 });
-  }
+  const file = await files.get(name).catch(() => null);
+  if (!file) return new Response("Not found", { status: 404 });
+  // File names are never reused, so a stored image can be cached for good.
+  return new Response(new Uint8Array(file), {
+    headers: { "Content-Type": "image/jpeg", "Cache-Control": "private, max-age=31536000, immutable" },
+  });
 }

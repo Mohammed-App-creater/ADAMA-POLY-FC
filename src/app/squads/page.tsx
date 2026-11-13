@@ -43,9 +43,7 @@ export default function Squads() {
                           <b>{p.name}</b>
                           {p.foot && <small>{t(p.foot === "R" ? "footR" : "footL")}</small>}
                         </span>
-                        {p.added
-                          ? <span className="badge b-new">{t("added")}</span>
-                          : <span className={`badge ${p.starter ? "b-starter" : "b-backup"}`}>{t(p.starter ? "starter" : "backup")}</span>}
+                        <span className={`badge ${p.starter ? "b-starter" : "b-backup"}`}>{t(p.starter ? "starter" : "backup")}</span>
                       </li>
                     ))}
                   </ul>

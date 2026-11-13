@@ -39,8 +39,8 @@ export type Def = {
   publicView?: (r: Row) => Record<string, unknown>;
   /** Row id comes from the request body (create-or-replace). */
   upsert?: boolean;
-  /** Staff may upload a profile photo (stored as `photo`). */
-  photo?: boolean;
+  /** Staff may upload a photo (stored as `photo`); "required" means a row must have one. */
+  photo?: boolean | "required";
 };
 
 export const COLLECTIONS: Record<string, Def> = {
@@ -74,15 +74,34 @@ export const COLLECTIONS: Record<string, Def> = {
     photo: true,
   },
   squadPlayers: {
-    fields: { name: str(120), group: oneOf(GROUPS), pos: oneOf(["GK", "DEF", "MID", "FWD"]), jersey: str(3) },
+    fields: {
+      name: str(120), group: oneOf(GROUPS), pos: oneOf(["GK", "DEF", "MID", "FWD"]), jersey: str(3),
+      starter: oneOf(["yes", "no"], "no"), foot: oneOf(["", "R", "L"], ""),
+    },
     required: ["name", "group", "pos"],
     publicRead: true,
     publicCreate: false,
     photo: true,
   },
-  jerseys: {
-    fields: { number: str(3) },
-    required: ["number"],
+  // One row per age group; the row id is the group.
+  schedule: {
+    fields: { group: oneOf(GROUPS), days: str(80), time: str(60) },
+    required: ["group", "days", "time"],
+    publicRead: true,
+    publicCreate: false,
+    upsert: true,
+  },
+  gallery: {
+    fields: { caption: str(160) },
+    required: [],
+    publicRead: true,
+    publicCreate: false,
+    photo: "required",
+  },
+  // A single row with id "site": the contact details shown around the website.
+  settings: {
+    fields: { phone: str(60), email: str(120), address: str(200), bankAccount: str(120) },
+    required: [],
     publicRead: true,
     publicCreate: false,
     upsert: true,

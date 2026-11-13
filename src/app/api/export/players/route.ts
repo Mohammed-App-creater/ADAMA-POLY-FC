@@ -1,9 +1,9 @@
 import { isStaff } from "@/lib/auth";
-import { tx } from "@/lib/db";
+import { list } from "@/lib/db";
 
 export async function GET() {
   if (!(await isStaff())) return new Response("Staff only", { status: 401 });
-  const players = await tx((db) => db.players ?? []);
+  const players = await list("players");
   const cell = (v: unknown) => {
     let s = String(v ?? "");
     if (/^[=+\-@]/.test(s)) s = "'" + s; // stop spreadsheet apps running it as a formula

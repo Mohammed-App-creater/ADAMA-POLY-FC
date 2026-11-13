@@ -1,7 +1,7 @@
 "use client";
 // Shared client-side pieces: language context, API helpers, small UI parts.
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
-import { GROUPS, baseSquad, type SquadPlayer } from "@/lib/data";
+import { CONTACT, type SquadPlayer } from "@/lib/data";
 import { translate, isKey, type Key, type Lang } from "@/lib/i18n";
 
 /* ---------- language ---------- */
@@ -54,25 +54,33 @@ export function useCollection<T>(name: string) {
 /* ---------- shared records ---------- */
 export type Player = { id: string; name: string; group: string; age?: number; studentId?: string; parent?: string; phone?: string; status?: string; photo?: string; createdAt?: number };
 export type Payment = { id: string; playerId: string; playerName: string; group: string; receipt: string; status: string; createdAt: number };
-export type Added = { id: string; name: string; group: string; pos: SquadPlayer["pos"]; jersey?: string; photo?: string };
-export type Jersey = { id: string; number: string };
+export type Added = { id: string; name: string; group: string; pos: SquadPlayer["pos"]; jersey?: string; starter?: string; foot?: string; photo?: string };
+export type TrainingTime = { id: string; group: string; days: string; time: string };
+export type GalleryPhoto = { id: string; caption: string; photo: string };
+export type Settings = typeof CONTACT;
 export type Fixture = { id: string; group: string; opponent: string; date: string; time: string; venue: string; side: string; competition: string; scoreUs: string; scoreThem: string };
 export type NewsItem = { id: string; title: string; date: string; body: string };
 export type Message = { id: string; name: string; phone: string; email: string; message: string; read?: string; createdAt: number };
 
-/** Sample squads + players staff added, with staff-assigned jersey numbers applied. */
+/** Squad players as the pages show them. Staff manage them from the admin. */
 export function useSquads() {
-  const added = useCollection<Added>("squadPlayers");
-  const jerseys = useCollection<Jersey>("jerseys");
-  const squads = useMemo(() => {
-    const num = new Map(jerseys.rows.map((j) => [j.id, j.number]));
-    const all: SquadPlayer[] = [
-      ...GROUPS.flatMap(baseSquad),
-      ...added.rows.map((a) => ({ id: `add-${a.id}`, name: a.name, group: a.group, pos: a.pos, number: a.jersey || "", photo: a.photo, added: true })),
-    ];
-    return all.map((p) => ({ ...p, number: num.get(p.id) || p.number }));
-  }, [added.rows, jerseys.rows]);
-  return { squads, reload: () => { added.reload(); jerseys.reload(); } };
+  const { rows, loading, reload } = useCollection<Added>("squadPlayers");
+  const squads = useMemo(
+    () => rows.map((a): SquadPlayer => ({
+      id: a.id, name: a.name, group: a.group, pos: a.pos, number: a.jersey || "", photo: a.photo,
+      starter: a.starter === "yes", foot: a.foot === "R" || a.foot === "L" ? a.foot : undefined,
+    })),
+    [rows],
+  );
+  return { squads, loading, reload };
+}
+
+/** Contact details, editable by staff under Admin > Settings. */
+export function useSettings() {
+  const { rows, loading, reload } = useCollection<Settings & { id: string }>("settings");
+  const blank: Settings = { phone: "", email: "", address: "", bankAccount: "" };
+  const settings: Settings = loading ? blank : { ...CONTACT, ...rows.find((r) => r.id === "site") };
+  return { settings, reload };
 }
 
 /** Everyone a payment can be made for: squad players plus registered players. */

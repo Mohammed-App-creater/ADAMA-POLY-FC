@@ -1,13 +1,13 @@
 "use client";
 import { useState, type FormEvent } from "react";
-import { Notice, PageHeader, api, useLang } from "@/components/client";
-import { CONTACT } from "@/lib/data";
+import { Notice, PageHeader, api, useLang, useSettings } from "@/components/client";
 import type { Key } from "@/lib/i18n";
 
 const FAQ: [Key, Key][] = [["q1", "a1"], ["q2", "a2"], ["q3", "a3"], ["q4", "a4"]];
 
 export default function Contact() {
   const { t } = useLang();
+  const { settings } = useSettings();
   const [state, setState] = useState<{ ok: boolean; text: string } | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -35,9 +35,9 @@ export default function Contact() {
         <div className="wrap two">
           <div>
             <ul className="info" style={{ marginTop: 0 }}>
-              <li><b>{t("cPhone")}</b>{CONTACT.phone}</li>
-              <li><b>{t("cEmail")}</b>{CONTACT.email}</li>
-              <li><b>{t("cAddress")}</b>{CONTACT.address}</li>
+              <li><b>{t("cPhone")}</b>{settings.phone}</li>
+              <li><b>{t("cEmail")}</b>{settings.email}</li>
+              <li><b>{t("cAddress")}</b>{settings.address}</li>
               <li><b>{t("cHours")}</b>{t("hoursText")}</li>
             </ul>
             <h3 className="sub">{t("faqTitle")}</h3>

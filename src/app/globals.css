@@ -500,3 +500,10 @@ button.avatar { cursor: zoom-in; }
 .photo-input { display: flex; align-items: center; gap: 16px; margin-bottom: 6px; }
 .photo-input .photo-label { display: block; font-weight: 700; margin-bottom: 8px; }
 .photo-input label.btn { cursor: pointer; margin: 0; }
+
+/* Admin gallery grid */
+.gal-admin { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); }
+.gal-admin figure { margin: 0; border: 1px solid var(--line); border-radius: 12px; background: #fff; overflow: hidden; }
+.gal-admin img { width: 100%; aspect-ratio: 4/3; object-fit: cover; display: block; cursor: zoom-in; }
+.gal-admin figcaption { padding: 10px 12px 0; font-weight: 600; font-size: 15px; }
+.gal-admin .btn-row { padding: 10px 12px 12px; margin: 0; }

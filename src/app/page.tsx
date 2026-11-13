@@ -2,18 +2,19 @@
 import Image from "next/image";
 import Link from "next/link";
 import { CallToAction, FixtureList, KitCards, NewsList, ProgramCards, upcomingOf } from "@/components/blocks";
-import { useCollection, useLang, useSquads, type Fixture, type NewsItem } from "@/components/client";
+import { useCollection, useLang, useSquads, type Fixture, type NewsItem, type TrainingTime } from "@/components/client";
 import { Counter, Marquee, RiseText } from "@/components/fx";
-import { GROUPS, SCHEDULE, STAFF } from "@/lib/data";
+import { GROUPS } from "@/lib/data";
 import type { Key } from "@/lib/i18n";
 
 const WHY: [Key, Key][] = [["w1t", "w1"], ["w2t", "w2"], ["w3t", "w3"], ["w4t", "w4"]];
-const sessions = SCHEDULE.reduce((n, s) => n + s.days.split(",").length, 0);
 
 export default function Home() {
   const { t } = useLang();
   const { squads } = useSquads();
   const staff = useCollection<{ id: string }>("staff");
+  const times = useCollection<TrainingTime>("schedule");
+  const sessions = times.rows.reduce((n, s) => n + s.days.split(",").length, 0);
   const fixtures = useCollection<Fixture>("fixtures");
   const news = useCollection<NewsItem>("news");
 
@@ -44,7 +45,7 @@ export default function Home() {
         <div className="wrap">
           <div className="stat"><Counter value={squads.length} /><span>{t("statPlayers")}</span></div>
           <div className="stat"><Counter value={GROUPS.length} /><span>{t("statGroups")}</span></div>
-          <div className="stat"><Counter value={STAFF.length + staff.rows.length} /><span>{t("statCoaches")}</span></div>
+          <div className="stat"><Counter value={staff.rows.length} /><span>{t("statCoaches")}</span></div>
           <div className="stat"><Counter value={sessions} /><span>{t("statSessions")}</span></div>
         </div>
       </div>
