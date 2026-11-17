@@ -39,16 +39,20 @@ export const STAFF: StaffMember[] = [
 ];
 export const ROLE_KEYS: Key[] = ["r_head", "r_asst", "r_gk", "r_fit", "r_doc", "r_mgr"];
 
-// Kit colours. Home follows the team photo (yellow shirt, black shoulders, black
-// shorts, hooped socks). Away and Training are proposals in the crest colours.
+// Kit colours. Home is the players' kit as supplied by the maker: black chest and
+// sleeves with gold brush strokes, gold body with a diagonal dash print, black
+// shorts with gold side panels and plain black socks. Away and Training are the
+// same cut in other crest colourways.
+// `number` is printed on the body; `text` on the chest panel and shorts, which
+// therefore have to share a tone.
 export type KitDesign = {
-  name: Key; body: string; yoke: string; trim: string; shorts: string; shortsTrim: string;
-  socks: string; hoop: string; number: string;
+  name: Key; body: string; print: string; yoke: string; trim: string; shorts: string; shortsTrim: string;
+  socks: string; number: string; text: string;
 };
 export const KITS: KitDesign[] = [
-  { name: "kitHome", body: "#ffc81a", yoke: "#111111", trim: "#111111", shorts: "#111111", shortsTrim: "#ffc81a", socks: "#ffc81a", hoop: "#111111", number: "#111111" },
-  { name: "kitAway", body: "#151515", yoke: "#ffc81a", trim: "#ffc81a", shorts: "#ffc81a", shortsTrim: "#111111", socks: "#151515", hoop: "#ffc81a", number: "#ffc81a" },
-  { name: "kitTraining", body: "#f7f7f4", yoke: "#ffc81a", trim: "#111111", shorts: "#111111", shortsTrim: "#f7f7f4", socks: "#f7f7f4", hoop: "#111111", number: "#111111" },
+  { name: "kitHome", body: "#f4b223", print: "#d2921a", yoke: "#141414", trim: "#f4b223", shorts: "#141414", shortsTrim: "#f4b223", socks: "#141414", number: "#ffffff", text: "#ffffff" },
+  { name: "kitAway", body: "#171717", print: "#2c2c2c", yoke: "#f4b223", trim: "#141414", shorts: "#f4b223", shortsTrim: "#141414", socks: "#f4b223", number: "#ffffff", text: "#141414" },
+  { name: "kitTraining", body: "#f7f7f4", print: "#e2e1da", yoke: "#141414", trim: "#f4b223", shorts: "#141414", shortsTrim: "#f4b223", socks: "#141414", number: "#141414", text: "#ffffff" },
 ];
 export const SIZES = [["XS", "8–10"], ["S", "11–12"], ["M", "13–14"], ["L", "15–17"], ["XL", "18+"]];
 

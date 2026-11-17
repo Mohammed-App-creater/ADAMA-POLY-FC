@@ -317,13 +317,25 @@ form.card { border-top: 6px solid var(--gold); }
 
 /* ---------- kit ---------- */
 .kits { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 26px; }
-.kit { text-align: center; padding: 30px 20px 26px; perspective: 900px; }
+.kit { text-align: center; padding: 30px 20px 26px; }
 section.dark .kit { background: linear-gradient(180deg, #1d1d1d, #131313); border-color: rgba(255, 255, 255, 0.1); }
 section.dark .kit h3 { color: #fff; }
 section.dark .kit p { color: rgba(255, 255, 255, 0.6); }
 .kit:hover { transform: translateY(-8px); border-color: var(--gold); }
-.kit svg { width: min(210px, 80%); height: auto; filter: drop-shadow(0 22px 18px rgba(0, 0, 0, 0.4)); transition: transform 0.7s var(--ease); transform-style: preserve-3d; }
-.kit:hover svg { transform: rotateY(-22deg) rotateX(4deg) scale(1.05); }
+/* The kit turns in 3D: .spin is the idle rotation, .turn adds what the visitor drags. */
+.kit3d { position: relative; width: min(210px, 80%); aspect-ratio: 240 / 400; margin: 0 auto 14px; perspective: 900px; cursor: grab; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+.kit3d[data-drag] { cursor: grabbing; }
+.kit3d::after { content: ""; position: absolute; left: 8%; right: 8%; bottom: -16px; height: 20px; background: radial-gradient(closest-side, rgba(0, 0, 0, 0.5), transparent); pointer-events: none; }
+.kit3d .spin, .kit3d .turn, .kit3d .turn > div { position: absolute; inset: 0; transform-style: preserve-3d; }
+.kit3d .spin { animation: kit-spin 18s linear infinite; }
+.kit3d:hover .spin, .kit3d[data-drag] .spin { animation-play-state: paused; }
+.kit3d svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+.kit3d svg.e { filter: brightness(0.6); }
+.kit3d .face { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
+.kit3d .front { transform: translateZ(7.5px); }
+.kit3d .back { transform: rotateY(180deg) translateZ(7.5px); }
+@keyframes kit-spin { to { transform: rotateY(360deg); } }
+@media (prefers-reduced-motion: reduce) { .kit3d .spin { animation: none; transform: rotateY(-24deg); } }
 .kit h3 { margin-top: 18px; }
 .swatches { display: flex; justify-content: center; gap: 8px; margin-top: 12px; }
 .swatches i { width: 22px; height: 22px; border-radius: 50%; border: 2px solid rgba(128, 128, 128, 0.45); }
