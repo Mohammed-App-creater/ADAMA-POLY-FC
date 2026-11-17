@@ -205,7 +205,7 @@ h3.sub { font-size: 30px; margin: 44px 0 16px; }
 .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--r); padding: 26px; box-shadow: var(--shadow); }
 .card h3 { font-size: 30px; margin-bottom: 6px; }
 .card p { color: var(--mute); font-size: 16px; margin: 0; }
-.card.lift, .feature, .person, .kit { transition: transform 0.35s var(--ease), box-shadow 0.35s, background 0.35s, border-color 0.35s; }
+.card.lift, .feature, .person { transition: transform 0.35s var(--ease), box-shadow 0.35s, background 0.35s, border-color 0.35s; }
 .card.lift:hover, .feature:hover, .person:hover { transform: translateY(-8px); box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06), 0 30px 50px -22px rgba(0, 0, 0, 0.45); }
 .prog { position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 8px; min-height: 290px; }
 .prog::before { content: ""; position: absolute; inset: auto 0 0 0; height: 6px; background: var(--gold); transform: scaleX(0); transform-origin: 0 50%; transition: transform 0.45s var(--ease); }
@@ -316,29 +316,8 @@ form.card { border-top: 6px solid var(--gold); }
 .modal .btn { position: absolute; top: 14px; right: 14px; }
 
 /* ---------- kit ---------- */
-.kits { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 26px; }
-.kit { text-align: center; padding: 30px 20px 26px; }
-section.dark .kit { background: linear-gradient(180deg, #1d1d1d, #131313); border-color: rgba(255, 255, 255, 0.1); }
-section.dark .kit h3 { color: #fff; }
-section.dark .kit p { color: rgba(255, 255, 255, 0.6); }
-.kit:hover { transform: translateY(-8px); border-color: var(--gold); }
-/* The kit turns in 3D: .spin is the idle rotation, .turn adds what the visitor drags. */
-.kit3d { position: relative; width: min(210px, 80%); aspect-ratio: 240 / 424; margin: 0 auto 14px; perspective: 900px; cursor: grab; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
-.kit3d[data-drag] { cursor: grabbing; }
-.kit3d::after { content: ""; position: absolute; left: 8%; right: 8%; bottom: -16px; height: 20px; background: radial-gradient(closest-side, rgba(0, 0, 0, 0.5), transparent); pointer-events: none; }
-.kit3d .spin, .kit3d .turn, .kit3d .turn > div { position: absolute; inset: 0; transform-style: preserve-3d; }
-.kit3d .spin { animation: kit-spin 18s linear infinite; }
-.kit3d:hover .spin, .kit3d[data-drag] .spin { animation-play-state: paused; }
-.kit3d svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
-.kit3d svg.e { filter: brightness(0.6); }
-.kit3d .face { backface-visibility: hidden; -webkit-backface-visibility: hidden; }
-.kit3d .front { transform: translateZ(7.5px); }
-.kit3d .back { transform: rotateY(180deg) translateZ(7.5px); }
-@keyframes kit-spin { to { transform: rotateY(360deg); } }
-@media (prefers-reduced-motion: reduce) { .kit3d .spin { animation: none; transform: rotateY(-24deg); } }
-.kit h3 { margin-top: 18px; }
-.swatches { display: flex; justify-content: center; gap: 8px; margin-top: 12px; }
-.swatches i { width: 22px; height: 22px; border-radius: 50%; border: 2px solid rgba(128, 128, 128, 0.45); }
+.kit-photo { max-width: 620px; margin: 0 auto; border-radius: var(--r); overflow: hidden; box-shadow: var(--shadow); }
+.kit-photo img { display: block; width: 100%; height: auto; }
 .glow { position: absolute; width: 520px; height: 520px; border-radius: 50%; background: radial-gradient(circle, rgba(255, 200, 26, 0.22), transparent 65%); pointer-events: none; }
 
 /* ---------- steps, faq, cta ---------- */

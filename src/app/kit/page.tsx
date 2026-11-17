@@ -1,5 +1,5 @@
 "use client";
-import { KitCards } from "@/components/blocks";
+import { KitImage } from "@/components/blocks";
 import { PageHeader, useLang } from "@/components/client";
 import { SIZES } from "@/lib/data";
 
@@ -9,7 +9,7 @@ export default function Kit() {
     <>
       <PageHeader title={t("kitTitle")} lead={t("kitLead")} />
       <section className="alt">
-        <div className="wrap"><KitCards /></div>
+        <div className="wrap"><KitImage /></div>
       </section>
       <section>
         <div className="wrap two mid">

@@ -39,21 +39,6 @@ export const STAFF: StaffMember[] = [
 ];
 export const ROLE_KEYS: Key[] = ["r_head", "r_asst", "r_gk", "r_fit", "r_doc", "r_mgr"];
 
-// Kit colours. Home is the players' kit as supplied by the maker: black chest and
-// sleeves with gold brush strokes, gold body with a diagonal dash print, black
-// shorts with gold side panels and plain black socks. Away and Training are the
-// same cut in other crest colourways.
-// `number` is printed on the body; `text` on the chest panel and shorts, which
-// therefore have to share a tone.
-export type KitDesign = {
-  name: Key; body: string; print: string; yoke: string; trim: string; shorts: string; shortsTrim: string;
-  socks: string; number: string; text: string;
-};
-export const KITS: KitDesign[] = [
-  { name: "kitHome", body: "#f4b223", print: "#d2921a", yoke: "#141414", trim: "#f4b223", shorts: "#141414", shortsTrim: "#f4b223", socks: "#141414", number: "#ffffff", text: "#ffffff" },
-  { name: "kitAway", body: "#171717", print: "#2c2c2c", yoke: "#f4b223", trim: "#141414", shorts: "#f4b223", shortsTrim: "#141414", socks: "#f4b223", number: "#ffffff", text: "#141414" },
-  { name: "kitTraining", body: "#f7f7f4", print: "#e2e1da", yoke: "#141414", trim: "#f4b223", shorts: "#141414", shortsTrim: "#f4b223", socks: "#141414", number: "#141414", text: "#ffffff" },
-];
 export const SIZES = [["XS", "8–10"], ["S", "11–12"], ["M", "13–14"], ["L", "15–17"], ["XL", "18+"]];
 
 export const GALLERY = ["/images/training-1.jpg", "/images/training-2.jpg", "/images/training-3.jpg", "/images/hero.jpg"];

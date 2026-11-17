@@ -1,7 +1,7 @@
 "use client";
 import Image from "next/image";
 import Link from "next/link";
-import { CallToAction, FixtureList, KitCards, NewsList, ProgramCards, StoryCards, upcomingOf } from "@/components/blocks";
+import { CallToAction, FixtureList, KitImage, NewsList, ProgramCards, StoryCards, upcomingOf } from "@/components/blocks";
 import { useCollection, useLang, useSquads, type Fixture, type NewsItem, type Story, type TrainingTime } from "@/components/client";
 import { Counter, Marquee, RiseText } from "@/components/fx";
 import { GROUPS } from "@/lib/data";
@@ -114,7 +114,7 @@ export default function Home() {
             </div>
             <Link className="link" href="/kit">{t("sizes")} →</Link>
           </div>
-          <KitCards />
+          <KitImage />
         </div>
       </section>
 
