@@ -103,6 +103,9 @@ const SHORTS = "M58 202h124l14 88h-68l-8-40-8 40H44Z";
 const SOCKS = "M68 302h32l-5 76q-1 10-11 10t-11-10Zm72 0h32l-5 76q-1 10-11 10t-11-10Z";
 // Left sleeve: cuff band plus the brush strokes running up from it. Mirrored for the right.
 const SLEEVE = "M6 84 40 106 44.3 99.3 43.6 98.9 52.4 73.9 38.9 95.8 43.4 79.8 34.1 92.7 48.9 55.2 29.3 89.6 36.5 68.3 24.6 86.5 37.7 52.6 19.8 83.5 25.1 65.7 15.1 80.4 25.6 51.8 10.3 77.3Z";
+// Left boot, seen from the front or the back. Mirrored for the right.
+const BOOT = "M69 382q15-9 30 0l3 22q1 15-18 15t-18-15Z";
+const BOOT_COLOR = "#8e9299";
 const SHORTS_TRIM = "M50 252q16 12 12 38H44Z";
 
 /**
@@ -114,8 +117,9 @@ export function KitSvg({ kit, side, number = "9" }: { kit: KitDesign; side: "fro
   const shirt = shirtPath(side === "front" ? 46 : 28);
   if (side === "edge") {
     return (
-      <svg viewBox="0 0 240 400" className="e" aria-hidden="true">
+      <svg viewBox="0 0 240 424" className="e" aria-hidden="true">
         <path d={SOCKS} fill={kit.socks} />
+        <path d={BOOT} fill={BOOT_COLOR} /><path d={BOOT} fill={BOOT_COLOR} transform="matrix(-1 0 0 1 240 0)" />
         <path d={SHORTS} fill={kit.shorts} />
         <path d={shirt} fill={kit.yoke} />
         <path d={BODY} fill={kit.body} />
@@ -124,7 +128,7 @@ export function KitSvg({ kit, side, number = "9" }: { kit: KitDesign; side: "fro
   }
   const mirror = "matrix(-1 0 0 1 240 0)";
   return (
-    <svg viewBox="0 0 240 400" className={side === "front" ? "f" : "b"} aria-hidden="true">
+    <svg viewBox="0 0 240 424" className={side === "front" ? "f" : "b"} aria-hidden="true">
       <defs>
         <clipPath id={`${id}-c`}><path d={shirt} /></clipPath>
         <pattern id={`${id}-p`} width="26" height="30" patternUnits="userSpaceOnUse" patternTransform="rotate(28)">
@@ -139,6 +143,18 @@ export function KitSvg({ kit, side, number = "9" }: { kit: KitDesign; side: "fro
       {/* socks */}
       <path d={SOCKS} fill={kit.socks} stroke="#0008" />
       <path d="M68 302h32l-.8 12H68.8Zm72 0h32l-.8 12h-30.4Z" fill="#fff" opacity=".1" />
+      {/* boots: laces on the front, heel seam on the back, studs under the sole */}
+      {[undefined, mirror].map((m) => (
+        <g key={m ?? "l"} transform={m}>
+          <path d="M72 416v5h5v-5Zm19 0v5h5v-5Z" fill="#3c3f44" />
+          <path d={BOOT} fill={BOOT_COLOR} stroke="#0008" />
+          <path d="M66.2 407q17.8 9 35.6 0 0 12-17.8 12t-17.8-12Z" fill="#000" opacity=".28" />
+          {side === "front"
+            ? <path d="M78 386h12M77.5 391h13M77 396h14M76.5 401h15" stroke="#fff" strokeOpacity=".75" strokeWidth="1.6" strokeLinecap="round" />
+            : <path d="M84 380v26" stroke="#000" strokeOpacity=".3" strokeWidth="2" strokeLinecap="round" />}
+          <path d={BOOT} fill={`url(#${id}-g)`} />
+        </g>
+      ))}
       {/* shorts */}
       <path d={SHORTS} fill={kit.shorts} stroke="#0008" strokeLinejoin="round" />
       <path d={SHORTS_TRIM} fill={kit.shortsTrim} /><path d={SHORTS_TRIM} fill={kit.shortsTrim} transform={mirror} />

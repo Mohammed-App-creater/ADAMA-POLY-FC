@@ -323,7 +323,7 @@ section.dark .kit h3 { color: #fff; }
 section.dark .kit p { color: rgba(255, 255, 255, 0.6); }
 .kit:hover { transform: translateY(-8px); border-color: var(--gold); }
 /* The kit turns in 3D: .spin is the idle rotation, .turn adds what the visitor drags. */
-.kit3d { position: relative; width: min(210px, 80%); aspect-ratio: 240 / 400; margin: 0 auto 14px; perspective: 900px; cursor: grab; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
+.kit3d { position: relative; width: min(210px, 80%); aspect-ratio: 240 / 424; margin: 0 auto 14px; perspective: 900px; cursor: grab; touch-action: pan-y; user-select: none; -webkit-user-select: none; }
 .kit3d[data-drag] { cursor: grabbing; }
 .kit3d::after { content: ""; position: absolute; left: 8%; right: 8%; bottom: -16px; height: 20px; background: radial-gradient(closest-side, rgba(0, 0, 0, 0.5), transparent); pointer-events: none; }
 .kit3d .spin, .kit3d .turn, .kit3d .turn > div { position: absolute; inset: 0; transform-style: preserve-3d; }
